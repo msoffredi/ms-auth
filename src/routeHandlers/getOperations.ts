@@ -1,6 +1,9 @@
 import { Operation, OperationDoc } from '../models/operation';
+import { Serializers } from '../models/_common';
 
-// export const getOperationsHandler = async (): Promise<RouteHandlerResponse> => {
 export const getOperationsHandler = async (): Promise<OperationDoc> => {
-    return await Operation.scan().all().exec();
+    return Operation.serializeMany(
+        await Operation.scan().all().exec(),
+        Serializers.RemoveTimestamps,
+    );
 };

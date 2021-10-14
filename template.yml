@@ -55,12 +55,17 @@ Resources:
                     Type: Api
                     Properties:
                         Path: /healthcheck
-                        Method: GET
+                        Method: get
                 OperationsV0:
                     Type: Api
                     Properties:
                         Path: /v0/operations
-                        Method: GET
+                        Method: get
+                OperationsV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/operations
+                        Method: post
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:

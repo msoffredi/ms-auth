@@ -10,4 +10,12 @@ if (process.env.AWS_SAM_LOCAL) {
     localModelOptions.create = true;
 }
 
-export { localModelOptions };
+enum Serializers {
+    RemoveTimestamps = 'removeTimeStamps',
+}
+
+const SerializersOptions = {
+    [Serializers.RemoveTimestamps]: { exclude: ['createdAt', 'updatedAt'] },
+};
+
+export { localModelOptions, Serializers, SerializersOptions };

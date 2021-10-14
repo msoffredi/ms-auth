@@ -4,6 +4,7 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
+import { postOperationsHandler } from '../routeHandlers/postOperations';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -28,6 +29,9 @@ export const handler = async (
             case '/v0/operations':
                 if (event.httpMethod === 'GET') {
                     body = await getOperationsHandler();
+                }
+                if (event.httpMethod === 'POST') {
+                    body = await postOperationsHandler(event);
                 }
                 break;
 
