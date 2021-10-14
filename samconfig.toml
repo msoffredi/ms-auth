@@ -1,0 +1,9 @@
+version = 0.1
+[default]
+[default.deploy]
+[default.deploy.parameters]
+stack_name = "ms-auth"
+s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-4k2q17dvzpd3"
+s3_prefix = "ms-auth"
+region = "us-east-1"
+capabilities = "CAPABILITY_IAM"

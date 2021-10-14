@@ -1,0 +1,8 @@
+node_modules/
+.aws-sam/
+dist/
+.vscode/
+
+env.json
+.overmind.sock
+docker/

@@ -1,0 +1,102 @@
+# This is the SAM template that represents the architecture of your serverless application
+# https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-template-basics.html
+
+# The AWSTemplateFormatVersion identifies the capabilities of the template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/format-version-structure.html
+AWSTemplateFormatVersion: 2010-09-09
+Description: RBAC authorization serverless microservice
+
+# Transform section specifies one or more macros that AWS CloudFormation uses to process your template
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/transform-section-structure.html
+Transform:
+    - AWS::Serverless-2016-10-31
+
+Globals:
+    Function:
+        Layers:
+            - !Ref RuntimeDependenciesLayer
+        Environment:
+            # # Environment variables used by every function
+            # Variables:
+            #  SAMPLE_TABLE: !Ref SampleTable
+        Runtime: nodejs14.x
+        MemorySize: 128
+        Timeout: 100
+    Api:
+        Cors:
+            AllowMethods: "'GET,OPTIONS'"
+            AllowHeaders: "'content-type'"
+            AllowOrigin: "'*'"
+            AllowCredentials: "'*'"
+
+# Resources declares the AWS resources that you want to include in the stack
+# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
+Resources:
+    # Each Lambda function is defined by properties:
+    # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+
+    # This is a Lambda function config associated with the source code: in src/handlers/example.ts
+    MsAuthAPIFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            Handler: dist/handlers/auth.handler
+            Description: RBAC auth serverless microservice
+            Runtime: nodejs14.x
+            Environment:
+                Variables:
+                    DYNAMODB_URI: ''
+            Policies:
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBOperationsTable
+            Events:
+                Healthcheck:
+                    Type: Api
+                    Properties:
+                        Path: /healthcheck
+                        Method: GET
+                OperationsV0:
+                    Type: Api
+                    Properties:
+                        Path: /v0/operations
+                        Method: GET
+
+    # Shared layer with Lambda runtime dependencies
+    RuntimeDependenciesLayer:
+        Type: AWS::Serverless::LayerVersion
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            LayerName: 'ms-auth-dependencies'
+            Description: Runtime dependencies for Lambdas
+            ContentUri: ./
+            CompatibleRuntimes:
+                - nodejs14.x
+            RetentionPolicy: Retain
+
+    DynamoDBOperationsTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-operations
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+Outputs:
+    MsAuthAPIProd:
+        Description: 'API Gateway endpoint URL for Prod environment'
+        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
+    MsAuthAPIStage:
+        Description: 'API Gateway endpoint URL for Stage environment'
+        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Stage'
+    MsAuthAPIFunction:
+        Description: 'Auth API Lambda Function ARN'
+        Value: !GetAtt MsAuthAPIFunction.Arn
+    MsAuthAPIFunctionIamRole:
+        Description: 'Implicit IAM Role created for Auth API function'
+        Value: !GetAtt MsAuthAPIFunctionRole.Arn
