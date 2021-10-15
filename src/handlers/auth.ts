@@ -5,6 +5,7 @@ import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
 import { postOperationsHandler } from '../routeHandlers/postOperations';
+import { delOperationsHandler } from '../routeHandlers/delOperations';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -39,7 +40,14 @@ export const handler = async (
                 body = { serviceStatus: ServiceStatus.Healthy };
                 break;
 
+            case '/v0/operations/{id}':
+                if (event.httpMethod === 'DELETE') {
+                    body = await delOperationsHandler(event);
+                }
+                break;
+
             default:
+                console.log(event);
                 status = 404;
                 body = { message: 'Bad request' };
         }

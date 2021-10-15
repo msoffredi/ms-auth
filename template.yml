@@ -56,7 +56,7 @@ Resources:
                     Properties:
                         Path: /healthcheck
                         Method: get
-                OperationsV0:
+                OperationsV0Get:
                     Type: Api
                     Properties:
                         Path: /v0/operations
@@ -66,6 +66,11 @@ Resources:
                     Properties:
                         Path: /v0/operations
                         Method: post
+                OperationsV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/operations/{id}
+                        Method: delete
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:

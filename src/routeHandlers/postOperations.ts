@@ -1,5 +1,4 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { randomUUID } from 'crypto';
 import { Operation, OperationDoc } from '../models/operation';
 import { Serializers } from '../models/_common';
 
@@ -12,12 +11,14 @@ export const postOperationsHandler = async (
 
     const request = JSON.parse(event.body);
 
-    if (!request.name) {
-        throw new Error('You need to provide a name to add a new operation');
+    if (!request.name || !request.id) {
+        throw new Error(
+            'You need to provide a name and id to add a new operation',
+        );
     }
 
     const newOperation = await Operation.create({
-        id: randomUUID(),
+        id: request.id,
         name: request.name,
     });
 

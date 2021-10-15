@@ -12,8 +12,13 @@ interface HealthcheckResponseBody {
     serviceStatus: ServiceStatus;
 }
 
+export interface DeleteRecordResponseBody {
+    deleted: string;
+}
+
 export type ResponseBody =
     | OperationDoc
     | ErrorResponseBody
     | HealthcheckResponseBody
+    | DeleteRecordResponseBody
     | null;
