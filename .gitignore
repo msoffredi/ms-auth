@@ -6,3 +6,4 @@ dist/
 env.json
 .overmind.sock
 docker/
+coverage/

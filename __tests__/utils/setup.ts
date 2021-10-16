@@ -12,7 +12,7 @@ dynamoose.aws.sdk.config.update({
     sslEnabled: false,
 });
 
-dynamoose.aws.ddb.local();
+dynamoose.aws.ddb.local('http://localhost:8001');
 
 beforeEach(async () => {
     await clearAllTables(dynamoose.aws.ddb());
