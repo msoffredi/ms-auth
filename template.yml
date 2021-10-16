@@ -56,6 +56,7 @@ Resources:
                     Properties:
                         Path: /healthcheck
                         Method: get
+                # Operations endpoints
                 OperationsV0Get:
                     Type: Api
                     Properties:
@@ -71,11 +72,22 @@ Resources:
                     Properties:
                         Path: /v0/operations/{id}
                         Method: delete
-                OperationsV0GetOne:
+                # Modules endpoints
+                ModulesV0Get:
                     Type: Api
                     Properties:
-                        Path: /v0/operations/{id}
+                        Path: /v0/modules
                         Method: get
+                ModulesV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/modules
+                        Method: post
+                ModulesV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/modules/{id}
+                        Method: delete
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:
@@ -95,6 +107,18 @@ Resources:
         Properties:
             BillingMode: PAY_PER_REQUEST
             TableName: ms-auth-operations
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBModulesTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-modules
             AttributeDefinitions:
                 - AttributeName: id
                   AttributeType: S

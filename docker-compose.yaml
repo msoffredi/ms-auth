@@ -5,6 +5,9 @@ services:
         image: 'amazon/dynamodb-local:latest'
         container_name: dynamodb-local
         ports:
+            # We listen on 8001 outside to avoid conflicts with jest-dynamodb
+            # in case we want to run tests while having the environment running
+            # locallly
             - '8000:8000'
         volumes:
             - './docker/dynamodb:/home/dynamodblocal/data'

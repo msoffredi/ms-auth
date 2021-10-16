@@ -2,9 +2,9 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
-import { Operation } from '../models/operation';
+import { Module } from '../models/module';
 
-export const delOperationHandler = async (
+export const delModuleHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<DeleteRecordResponseBody> => {
     if (!event.pathParameters || !event.pathParameters.id) {
@@ -18,12 +18,12 @@ export const delOperationHandler = async (
 
     const { id } = event.pathParameters;
 
-    const operation = await Operation.get(id);
+    const module = await Module.get(id);
 
-    if (operation) {
-        await Operation.delete(id);
+    if (module) {
+        await Module.delete(id);
     } else {
-        throw new DatabaseError(`Could not delete operation with id: ${id}`);
+        throw new DatabaseError(`Could not delete module with id: ${id}`);
     }
 
     return {

@@ -1,3 +1,4 @@
+import { ErrorEntry } from '../errors/types';
 import { OperationDoc } from '../models/operation';
 
 interface ErrorResponseBody {
@@ -21,4 +22,5 @@ export type ResponseBody =
     | ErrorResponseBody
     | HealthcheckResponseBody
     | DeleteRecordResponseBody
+    | ErrorEntry[]
     | null;
