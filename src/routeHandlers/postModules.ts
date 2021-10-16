@@ -1,11 +1,11 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { randomUUID } from 'crypto';
-import { Operation, OperationDoc } from '../models/operation';
+import { Module, ModuleDoc } from '../models/module';
 import { Serializers } from '../models/_common';
 
-export const postOperationsHandler = async (
+export const postModulesHandler = async (
     event: APIGatewayProxyEvent,
-): Promise<OperationDoc> => {
+): Promise<ModuleDoc> => {
     if (!event.body) {
         throw new Error('You need to provide a name to add a new operation');
     }
@@ -13,17 +13,15 @@ export const postOperationsHandler = async (
     const request = JSON.parse(event.body);
 
     if (!request.name) {
-        throw new Error(
-            'You need to provide a name and id to add a new operation',
-        );
+        throw new Error('You need to provide a name to add a new module');
     }
 
     const id = request.id ?? randomUUID();
 
-    const newOperation = await Operation.create({
+    const newModule = await Module.create({
         id,
         name: request.name,
     });
 
-    return new Operation(newOperation.serialize(Serializers.RemoveTimestamps));
+    return new Module(newModule.serialize(Serializers.RemoveTimestamps));
 };

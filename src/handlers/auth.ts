@@ -6,7 +6,9 @@ import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
 import { postOperationsHandler } from '../routeHandlers/postOperations';
 import { delOperationHandler } from '../routeHandlers/delOperation';
-import { getOperationHandler } from '../routeHandlers/getOperation';
+import { getModulesHandler } from '../routeHandlers/getModules';
+import { postModulesHandler } from '../routeHandlers/postModules';
+import { delModuleHandler } from '../routeHandlers/delModule';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -28,6 +30,14 @@ export const handler = async (
 
     try {
         switch (event.resource) {
+            case '/healthcheck':
+                if (event.httpMethod === 'GET') {
+                    body = { serviceStatus: ServiceStatus.Healthy };
+                } else {
+                    throw new Error('Unsupported method for this path');
+                }
+                break;
+
             case '/v0/operations':
                 switch (event.httpMethod) {
                     case 'GET':
@@ -41,24 +51,32 @@ export const handler = async (
                 }
                 break;
 
-            case '/healthcheck':
-                if (event.httpMethod === 'GET') {
-                    body = { serviceStatus: ServiceStatus.Healthy };
+            case '/v0/modules':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getModulesHandler();
+                        break;
+                    case 'POST':
+                        body = await postModulesHandler(event);
+                        break;
+                    default:
+                        throw new Error('Unsupported method for this path');
+                }
+                break;
+
+            case '/v0/modules/{id}':
+                if (event.httpMethod === 'DELETE') {
+                    body = await delModuleHandler(event);
                 } else {
                     throw new Error('Unsupported method for this path');
                 }
                 break;
 
             case '/v0/operations/{id}':
-                switch (event.httpMethod) {
-                    case 'GET':
-                        body = await getOperationHandler(event);
-                        break;
-                    case 'DELETE':
-                        body = await delOperationHandler(event);
-                        break;
-                    default:
-                        throw new Error('Unsupported method for this path');
+                if (event.httpMethod === 'DELETE') {
+                    body = await delOperationHandler(event);
+                } else {
+                    throw new Error('Unsupported method for this path');
                 }
                 break;
 
