@@ -9,6 +9,7 @@ import { delOperationHandler } from '../routeHandlers/delOperation';
 import { getModulesHandler } from '../routeHandlers/getModules';
 import { postModulesHandler } from '../routeHandlers/postModules';
 import { delModuleHandler } from '../routeHandlers/delModule';
+import { CustomError } from '../errors/custom-error';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -87,8 +88,11 @@ export const handler = async (
         }
     } catch (err) {
         console.error(err);
-        status = 500;
-        body = { message: 'Unexpected error' };
+
+        if (err instanceof CustomError) {
+            status = err.statusCode;
+            body = err.serializeErrors();
+        }
     }
 
     return {

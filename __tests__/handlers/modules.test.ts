@@ -48,14 +48,7 @@ it('deletes a module when calling endpoint with id and DELETE method', async () 
         resource: '/v0/modules',
     });
     const postResult = await handler(event);
-    const expectedResult = {
-        statusCode: 200,
-        body: JSON.stringify(newOp),
-    };
-    expect(postResult).toEqual(expectedResult);
-
-    let getResult = await handler(getAllEvent);
-    expect(JSON.parse(getResult.body)).toMatchObject([newOp]);
+    expect(postResult.statusCode).toEqual(200);
 
     const { id } = JSON.parse(postResult.body);
     const deleteEvent = constructAPIGwEvent(newOp, {
@@ -66,6 +59,58 @@ it('deletes a module when calling endpoint with id and DELETE method', async () 
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    getResult = await handler(getAllEvent);
+    const getResult = await handler(getAllEvent);
     expect(JSON.parse(getResult.body)).toEqual([]);
+});
+
+it('throws an error if we do not provide a module id on delete', async () => {
+    const newOp = { id: 'test', name: 'Test name' };
+
+    const event = constructAPIGwEvent(newOp, {
+        method: 'POST',
+        resource: '/v0/modules',
+    });
+    const postResult = await handler(event);
+    expect(postResult.statusCode).toEqual(200);
+
+    const deleteEvent = constructAPIGwEvent(newOp, {
+        method: 'DELETE',
+        resource: '/v0/modules/{id}',
+    });
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(400);
+});
+
+it('throws an error if calling POST without proper data', async () => {
+    const event = constructAPIGwEvent(
+        {},
+        {
+            method: 'POST',
+            resource: '/v0/modules',
+        },
+    );
+
+    const postResult = await handler(event);
+
+    // POST request should return new module object
+    expect(postResult.statusCode).toEqual(400);
+});
+
+it('throws a 422 error if the id provided for a delete module is not found', async () => {
+    const newOp = { id: 'test', name: 'Test name' };
+
+    const event = constructAPIGwEvent(newOp, {
+        method: 'POST',
+        resource: '/v0/modules',
+    });
+    const postResult = await handler(event);
+    expect(postResult.statusCode).toEqual(200);
+
+    const deleteEvent = constructAPIGwEvent(newOp, {
+        method: 'DELETE',
+        resource: '/v0/modules/{id}',
+        pathParameters: { id: 'wrong-id' },
+    });
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(422);
 });
