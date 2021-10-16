@@ -1,9 +1,9 @@
-import { constructAPIGwEvent } from '../../utils/helpers';
-import { handler } from '../../../src/handlers/auth';
+import { constructAPIGwEvent } from '../utils/helpers';
+import { handler } from '../../src/handlers/auth';
 
 const getAllEvent = constructAPIGwEvent(
     {},
-    { method: 'GET', path: '/v0/operations' },
+    { method: 'GET', resource: '/v0/operations' },
 );
 
 it('should return a 200 and array of operations', async () => {
@@ -21,7 +21,7 @@ it('should add a new operation on POST with proper data', async () => {
     const newOp = { id: 'test', name: 'Test name' };
     const event = constructAPIGwEvent(newOp, {
         method: 'POST',
-        path: '/v0/operations',
+        resource: '/v0/operations',
     });
 
     const postResult = await handler(event);
@@ -45,7 +45,7 @@ it('deletes an operation when colling endpoint with id and DELETE method', async
 
     const event = constructAPIGwEvent(newOp, {
         method: 'POST',
-        path: '/v0/operations',
+        resource: '/v0/operations',
     });
     const postResult = await handler(event);
     const expectedResult = {
@@ -60,7 +60,7 @@ it('deletes an operation when colling endpoint with id and DELETE method', async
     const { id } = JSON.parse(postResult.body);
     const deleteEvent = constructAPIGwEvent(newOp, {
         method: 'DELETE',
-        path: '/v0/operations/{id}',
+        resource: '/v0/operations/{id}',
         pathParameters: { id },
     });
     const delResult = await handler(deleteEvent);

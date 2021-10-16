@@ -71,6 +71,11 @@ Resources:
                     Properties:
                         Path: /v0/operations/{id}
                         Method: delete
+                OperationsV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/operations/{id}
+                        Method: get
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:

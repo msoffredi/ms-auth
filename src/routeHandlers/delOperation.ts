@@ -2,7 +2,7 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { Operation } from '../models/operation';
 
-export const delOperationsHandler = async (
+export const delOperationHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<DeleteRecordResponseBody> => {
     if (!event.pathParameters || !event.pathParameters.id) {

@@ -5,7 +5,8 @@ import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
 import { postOperationsHandler } from '../routeHandlers/postOperations';
-import { delOperationsHandler } from '../routeHandlers/delOperations';
+import { delOperationHandler } from '../routeHandlers/delOperation';
+import { getOperationHandler } from '../routeHandlers/getOperation';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -26,7 +27,7 @@ export const handler = async (
     let body: ResponseBody = null;
 
     try {
-        switch (event.path) {
+        switch (event.resource) {
             case '/v0/operations':
                 switch (event.httpMethod) {
                     case 'GET':
@@ -49,10 +50,15 @@ export const handler = async (
                 break;
 
             case '/v0/operations/{id}':
-                if (event.httpMethod === 'DELETE') {
-                    body = await delOperationsHandler(event);
-                } else {
-                    throw new Error('Unsupported method for this path');
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOperationHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delOperationHandler(event);
+                        break;
+                    default:
+                        throw new Error('Unsupported method for this path');
                 }
                 break;
 
