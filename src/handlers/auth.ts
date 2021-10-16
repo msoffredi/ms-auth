@@ -4,6 +4,9 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
+import { postOperationsHandler } from '../routeHandlers/postOperations';
+import { delOperationHandler } from '../routeHandlers/delOperation';
+import { getOperationHandler } from '../routeHandlers/getOperation';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -26,16 +29,41 @@ export const handler = async (
     try {
         switch (event.resource) {
             case '/v0/operations':
-                if (event.httpMethod === 'GET') {
-                    body = await getOperationsHandler();
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOperationsHandler();
+                        break;
+                    case 'POST':
+                        body = await postOperationsHandler(event);
+                        break;
+                    default:
+                        throw new Error('Unsupported method for this path');
                 }
                 break;
 
             case '/healthcheck':
-                body = { serviceStatus: ServiceStatus.Healthy };
+                if (event.httpMethod === 'GET') {
+                    body = { serviceStatus: ServiceStatus.Healthy };
+                } else {
+                    throw new Error('Unsupported method for this path');
+                }
+                break;
+
+            case '/v0/operations/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOperationHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delOperationHandler(event);
+                        break;
+                    default:
+                        throw new Error('Unsupported method for this path');
+                }
                 break;
 
             default:
+                console.log(event);
                 status = 404;
                 body = { message: 'Bad request' };
         }
