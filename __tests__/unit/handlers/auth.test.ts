@@ -1,6 +1,7 @@
 import { constructAPIGwEvent } from '../../utils/helpers';
 
 import { handler } from '../../../src/handlers/auth';
+import { ServiceStatus } from '../../../src/handlers/types';
 
 // This includes all tests for auth.handler()
 describe('Auth handler tests', () => {
@@ -10,12 +11,12 @@ describe('Auth handler tests', () => {
             { method: 'GET', path: '/healthcheck' },
         );
 
-        // Invoke exampleHandler()
+        // Invoke handler()
         const result = await handler(event);
 
         const expectedResult = {
             statusCode: 200,
-            body: JSON.stringify({ serviceStatus: 'healthy' }),
+            body: JSON.stringify({ serviceStatus: ServiceStatus.Healthy }),
         };
 
         // Compare the result with the expected result

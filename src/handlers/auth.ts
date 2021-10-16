@@ -26,23 +26,33 @@ export const handler = async (
     let body: ResponseBody = null;
 
     try {
-        switch (event.resource) {
+        switch (event.path) {
             case '/v0/operations':
-                if (event.httpMethod === 'GET') {
-                    body = await getOperationsHandler();
-                }
-                if (event.httpMethod === 'POST') {
-                    body = await postOperationsHandler(event);
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOperationsHandler();
+                        break;
+                    case 'POST':
+                        body = await postOperationsHandler(event);
+                        break;
+                    default:
+                        throw new Error('Unsupported method for this path');
                 }
                 break;
 
             case '/healthcheck':
-                body = { serviceStatus: ServiceStatus.Healthy };
+                if (event.httpMethod === 'GET') {
+                    body = { serviceStatus: ServiceStatus.Healthy };
+                } else {
+                    throw new Error('Unsupported method for this path');
+                }
                 break;
 
             case '/v0/operations/{id}':
                 if (event.httpMethod === 'DELETE') {
                     body = await delOperationsHandler(event);
+                } else {
+                    throw new Error('Unsupported method for this path');
                 }
                 break;
 
