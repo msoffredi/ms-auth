@@ -88,6 +88,27 @@ Resources:
                     Properties:
                         Path: /v0/modules/{id}
                         Method: delete
+                # Permissions endpoints
+                PermissionsV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions
+                        Method: get
+                PermissionsV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions
+                        Method: post
+                PermissionsV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions/{id}
+                        Method: delete
+                PermissionsV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions/{id}
+                        Method: get
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:
@@ -119,6 +140,18 @@ Resources:
         Properties:
             BillingMode: PAY_PER_REQUEST
             TableName: ms-auth-modules
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBModulesTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-permissions
             AttributeDefinitions:
                 - AttributeName: id
                   AttributeType: S

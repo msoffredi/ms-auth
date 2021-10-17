@@ -21,6 +21,8 @@ export const delModuleHandler = async (
     const module = await Module.get(id);
 
     if (module) {
+        // TODO: should not allow deleting if the module is in a permission
+
         await Module.delete(id);
     } else {
         throw new DatabaseError(`Could not delete module with id: ${id}`);
