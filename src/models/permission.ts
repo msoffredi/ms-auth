@@ -37,4 +37,9 @@ Permission.serializer.add(
     SerializersOptions[Serializers.RemoveTimestamps],
 );
 
+Permission.serializer.add(
+    Serializers.PopulateAndRemoveTimestamps,
+    SerializersOptions[Serializers.PopulateAndRemoveTimestamps],
+);
+
 export { Permission, PermissionDoc };

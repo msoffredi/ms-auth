@@ -15,6 +15,7 @@ import { BadMethodError } from '../errors/bad-method-error';
 import { BadRequestError } from '../errors/bad-request-error';
 import { postPermissionsHandler } from '../routeHandlers/postPermissions';
 import { delPermissionHandler } from '../routeHandlers/delPermission';
+import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -51,6 +52,9 @@ export const handler = async (
 
             case '/v0/permissions/{id}':
                 switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOnePermissionHandler(event);
+                        break;
                     case 'DELETE':
                         body = await delPermissionHandler(event);
                         break;

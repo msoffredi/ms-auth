@@ -136,3 +136,50 @@ it('throws a 422 error if the id provided for a delete permission is not found',
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
 });
+
+it('should return a 200 and a permissions on GET with id', async () => {
+    const operationObj = { id: 'op123', name: 'Test operation name' };
+    const operation = await Operation.create(operationObj);
+
+    const moduleObj = { id: 'mod123', name: 'Test module name' };
+    const module = await Module.create(moduleObj);
+
+    const permission = {
+        id: 'per123',
+        name: 'Test permission name',
+        module,
+        operation,
+    };
+    await Permission.create(permission);
+
+    const getEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/permissions/{id}',
+            pathParameters: { id: permission.id },
+        },
+    );
+    const result = await handler(getEvent);
+
+    expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body)).toMatchObject({
+        id: permission.id,
+        name: permission.name,
+        module: moduleObj,
+        operation: operationObj,
+    });
+});
+
+it('throws a 422 error if the id provided to retrieve a permission is not found', async () => {
+    const getEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/permissions/{id}',
+            pathParameters: { id: 'wrong-id' },
+        },
+    );
+    const getResult = await handler(getEvent);
+    expect(getResult.statusCode).toEqual(422);
+});

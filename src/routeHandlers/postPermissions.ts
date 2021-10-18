@@ -68,16 +68,7 @@ export const postPermissionsHandler = async (
         operation,
     });
 
-    const populatedPermission = await newPermission.populate();
-
-    const serializedPermission = populatedPermission.serialize(
-        Serializers.RemoveTimestamps,
+    return new Permission(
+        await newPermission.serialize(Serializers.PopulateAndRemoveTimestamps),
     );
-
-    serializedPermission.module.createdAt = undefined;
-    serializedPermission.module.updatedAt = undefined;
-    serializedPermission.operation.createdAt = undefined;
-    serializedPermission.operation.updatedAt = undefined;
-
-    return new Permission(serializedPermission);
 };
