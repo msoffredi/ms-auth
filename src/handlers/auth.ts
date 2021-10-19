@@ -18,6 +18,8 @@ import { delPermissionHandler } from '../routeHandlers/delPermission';
 import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
 import { getRolesHandler } from '../routeHandlers/getRoles';
 import { postRolesHandler } from '../routeHandlers/postRoles';
+import { delRoleHandler } from '../routeHandlers/delRole';
+import { getOneRoleHandler } from '../routeHandlers/getOneRole';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -72,6 +74,19 @@ export const handler = async (
                         break;
                     case 'DELETE':
                         body = await delPermissionHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/roles/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOneRoleHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delRoleHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
