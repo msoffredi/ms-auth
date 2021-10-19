@@ -16,6 +16,8 @@ import { BadRequestError } from '../errors/bad-request-error';
 import { postPermissionsHandler } from '../routeHandlers/postPermissions';
 import { delPermissionHandler } from '../routeHandlers/delPermission';
 import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
+import { getRolesHandler } from '../routeHandlers/getRoles';
+import { postRolesHandler } from '../routeHandlers/postRoles';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -44,6 +46,19 @@ export const handler = async (
                         break;
                     case 'POST':
                         body = await postPermissionsHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/roles':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getRolesHandler();
+                        break;
+                    case 'POST':
+                        body = await postRolesHandler(event);
                         break;
                     default:
                         throw new BadMethodError();

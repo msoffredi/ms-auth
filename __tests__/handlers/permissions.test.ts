@@ -183,3 +183,15 @@ it('throws a 422 error if the id provided to retrieve a permission is not found'
     const getResult = await handler(getEvent);
     expect(getResult.statusCode).toEqual(422);
 });
+
+it('throws an error if we do not provide an permission id on get', async () => {
+    const deleteEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/permissions/{id}',
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(400);
+});

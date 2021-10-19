@@ -109,6 +109,27 @@ Resources:
                     Properties:
                         Path: /v0/permissions/{id}
                         Method: get
+                # Roles endpoints
+                RolesV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles
+                        Method: get
+                RolesV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles
+                        Method: post
+                RolesV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles/{id}
+                        Method: delete
+                RolesV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles/{id}
+                        Method: get
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:
