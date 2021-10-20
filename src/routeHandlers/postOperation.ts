@@ -1,12 +1,12 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { randomUUID } from 'crypto';
 import { RequestValidationError } from '../errors/request-validation-error';
-import { Module, ModuleDoc } from '../models/module';
+import { Operation, OperationDoc } from '../models/operation';
 import { Serializers } from '../models/_common';
 
-export const postModulesHandler = async (
+export const postOperationHandler = async (
     event: APIGatewayProxyEvent,
-): Promise<ModuleDoc> => {
+): Promise<OperationDoc> => {
     if (!event.body) {
         throw new RequestValidationError([
             {
@@ -29,10 +29,10 @@ export const postModulesHandler = async (
 
     const id = request.id ?? randomUUID();
 
-    const newModule = await Module.create({
+    const newOperation = await Operation.create({
         id,
         name: request.name,
     });
 
-    return new Module(newModule.serialize(Serializers.RemoveTimestamps));
+    return new Operation(newOperation.serialize(Serializers.RemoveTimestamps));
 };

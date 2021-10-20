@@ -26,8 +26,8 @@
     "scripts": {
         "build": "node_modules/typescript/bin/tsc",
         "watch": "node_modules/typescript/bin/tsc -w --preserveWatchOutput",
-        "test": "jest",
-        "coverage": "jest --coverage",
-        "test:watch": "jest --watchAll --no-cache"
+        "test": "jest --runInBand",
+        "test:coverage": "jest --runInBand --coverage",
+        "test:watch": "jest  --runInBand --watchAll --no-cache"
     }
 }

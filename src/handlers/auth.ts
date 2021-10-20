@@ -4,12 +4,26 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
-import { postOperationsHandler } from '../routeHandlers/postOperations';
+import { postOperationHandler } from '../routeHandlers/postOperation';
 import { delOperationHandler } from '../routeHandlers/delOperation';
 import { getModulesHandler } from '../routeHandlers/getModules';
-import { postModulesHandler } from '../routeHandlers/postModules';
+import { postModuleHandler } from '../routeHandlers/postModule';
 import { delModuleHandler } from '../routeHandlers/delModule';
 import { CustomError } from '../errors/custom-error';
+import { getPermissionsHandler } from '../routeHandlers/getPermissions';
+import { BadMethodError } from '../errors/bad-method-error';
+import { BadRequestError } from '../errors/bad-request-error';
+import { postPermissionHandler } from '../routeHandlers/postPermission';
+import { delPermissionHandler } from '../routeHandlers/delPermission';
+import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
+import { getRolesHandler } from '../routeHandlers/getRoles';
+import { postRoleHandler } from '../routeHandlers/postRole';
+import { delRoleHandler } from '../routeHandlers/delRole';
+import { getOneRoleHandler } from '../routeHandlers/getOneRole';
+import { getUsersHandler } from '../routeHandlers/getUsers';
+import { postUserHandler } from '../routeHandlers/postUser';
+import { getOneUserHandler } from '../routeHandlers/getOneUser';
+import { delUserHandler } from '../routeHandlers/delUser';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -31,11 +45,89 @@ export const handler = async (
 
     try {
         switch (event.resource) {
+            case '/v0/users/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOneUserHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delUserHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/users':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getUsersHandler();
+                        break;
+                    case 'POST':
+                        body = await postUserHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/permissions':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getPermissionsHandler();
+                        break;
+                    case 'POST':
+                        body = await postPermissionHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/roles':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getRolesHandler();
+                        break;
+                    case 'POST':
+                        body = await postRoleHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/roles/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOneRoleHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delRoleHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/permissions/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOnePermissionHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delPermissionHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
             case '/healthcheck':
                 if (event.httpMethod === 'GET') {
                     body = { serviceStatus: ServiceStatus.Healthy };
                 } else {
-                    throw new Error('Unsupported method for this path');
+                    throw new BadMethodError();
                 }
                 break;
 
@@ -45,10 +137,10 @@ export const handler = async (
                         body = await getOperationsHandler();
                         break;
                     case 'POST':
-                        body = await postOperationsHandler(event);
+                        body = await postOperationHandler(event);
                         break;
                     default:
-                        throw new Error('Unsupported method for this path');
+                        throw new BadMethodError();
                 }
                 break;
 
@@ -58,10 +150,10 @@ export const handler = async (
                         body = await getModulesHandler();
                         break;
                     case 'POST':
-                        body = await postModulesHandler(event);
+                        body = await postModuleHandler(event);
                         break;
                     default:
-                        throw new Error('Unsupported method for this path');
+                        throw new BadMethodError();
                 }
                 break;
 
@@ -69,7 +161,7 @@ export const handler = async (
                 if (event.httpMethod === 'DELETE') {
                     body = await delModuleHandler(event);
                 } else {
-                    throw new Error('Unsupported method for this path');
+                    throw new BadMethodError();
                 }
                 break;
 
@@ -77,14 +169,13 @@ export const handler = async (
                 if (event.httpMethod === 'DELETE') {
                     body = await delOperationHandler(event);
                 } else {
-                    throw new Error('Unsupported method for this path');
+                    throw new BadMethodError();
                 }
                 break;
 
             default:
-                console.log(event);
-                status = 404;
-                body = { message: 'Bad request' };
+                // We should never reach this point if the API Gateway is configured properly
+                throw new BadRequestError();
         }
     } catch (err) {
         console.error(err);

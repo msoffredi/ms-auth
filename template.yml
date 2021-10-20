@@ -50,6 +50,14 @@ Resources:
             Policies:
                 - DynamoDBCrudPolicy:
                       TableName: !Ref DynamoDBOperationsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBModulesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBPermissionsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBRolesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBUsersTable
             Events:
                 Healthcheck:
                     Type: Api
@@ -88,6 +96,69 @@ Resources:
                     Properties:
                         Path: /v0/modules/{id}
                         Method: delete
+                # Permissions endpoints
+                PermissionsV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions
+                        Method: get
+                PermissionsV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions
+                        Method: post
+                PermissionsV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions/{id}
+                        Method: delete
+                PermissionsV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/permissions/{id}
+                        Method: get
+                # Roles endpoints
+                RolesV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles
+                        Method: get
+                RolesV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles
+                        Method: post
+                RolesV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles/{id}
+                        Method: delete
+                RolesV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/roles/{id}
+                        Method: get
+                # Users endpoints
+                UsersV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users
+                        Method: get
+                UsersV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users
+                        Method: post
+                UsersV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users/{id}
+                        Method: delete
+                UsersV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users/{id}
+                        Method: get
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:
@@ -119,6 +190,42 @@ Resources:
         Properties:
             BillingMode: PAY_PER_REQUEST
             TableName: ms-auth-modules
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBPermissionsTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-permissions
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBRolesTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-roles
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBUsersTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-users
             AttributeDefinitions:
                 - AttributeName: id
                   AttributeType: S

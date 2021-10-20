@@ -1,5 +1,6 @@
+import { Document } from 'dynamoose/dist/Document';
+import { ObjectType } from 'dynamoose/dist/General';
 import { ErrorEntry } from '../errors/types';
-import { OperationDoc } from '../models/operation';
 
 interface ErrorResponseBody {
     message: string;
@@ -18,7 +19,8 @@ export interface DeleteRecordResponseBody {
 }
 
 export type ResponseBody =
-    | OperationDoc
+    | Document
+    | ObjectType[]
     | ErrorResponseBody
     | HealthcheckResponseBody
     | DeleteRecordResponseBody

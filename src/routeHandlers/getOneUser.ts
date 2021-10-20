@@ -1,12 +1,12 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
-import { DeleteRecordResponseBody } from '../handlers/types';
-import { Module } from '../models/module';
+import { User, UserDoc } from '../models/user';
+import { Serializers } from '../models/_common';
 
-export const delModuleHandler = async (
+export const getOneUserHandler = async (
     event: APIGatewayProxyEvent,
-): Promise<DeleteRecordResponseBody> => {
+): Promise<UserDoc> => {
     if (!event.pathParameters || !event.pathParameters.id) {
         throw new RequestValidationError([
             {
@@ -18,17 +18,13 @@ export const delModuleHandler = async (
 
     const { id } = event.pathParameters;
 
-    const module = await Module.get(id);
+    const user = await User.get(id);
 
-    if (module) {
-        // TODO: should not allow deleting if the module is in a permission
-
-        await Module.delete(id);
-    } else {
-        throw new DatabaseError(`Could not delete module with id: ${id}`);
+    if (!user) {
+        throw new DatabaseError(`Could not retrieve user with id: ${id}`);
     }
 
-    return {
-        deleted: id,
-    };
+    return new User(
+        await user.serialize(Serializers.PopulateAndRemoveTimestamps),
+    );
 };

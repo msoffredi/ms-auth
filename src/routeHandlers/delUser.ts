@@ -2,9 +2,9 @@ import { APIGatewayProxyEvent } from 'aws-lambda';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
-import { Operation } from '../models/operation';
+import { User } from '../models/user';
 
-export const delOperationHandler = async (
+export const delUserHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<DeleteRecordResponseBody> => {
     if (!event.pathParameters || !event.pathParameters.id) {
@@ -18,14 +18,12 @@ export const delOperationHandler = async (
 
     const { id } = event.pathParameters;
 
-    const operation = await Operation.get(id);
+    const user = await User.get(id);
 
-    if (operation) {
-        // TODO: should not allow deleting if the operation is in a permission
-
-        await Operation.delete(id);
+    if (user) {
+        await User.delete(id);
     } else {
-        throw new DatabaseError(`Could not delete operation with id: ${id}`);
+        throw new DatabaseError(`Could not delete user with id: ${id}`);
     }
 
     return {
