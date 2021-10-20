@@ -6,7 +6,7 @@ import { Permission, PermissionDoc } from '../models/permission';
 import { Role, RoleDoc } from '../models/role';
 import { Serializers } from '../models/_common';
 
-export const postRolesHandler = async (
+export const postRoleHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<RoleDoc> => {
     const errors = [];

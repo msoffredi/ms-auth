@@ -7,7 +7,7 @@ import { Operation } from '../models/operation';
 import { Permission, PermissionDoc } from '../models/permission';
 import { Serializers } from '../models/_common';
 
-export const postPermissionsHandler = async (
+export const postPermissionHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<PermissionDoc> => {
     const errors = [];

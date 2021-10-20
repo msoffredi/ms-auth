@@ -4,24 +4,26 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
-import { postOperationsHandler } from '../routeHandlers/postOperations';
+import { postOperationHandler } from '../routeHandlers/postOperation';
 import { delOperationHandler } from '../routeHandlers/delOperation';
 import { getModulesHandler } from '../routeHandlers/getModules';
-import { postModulesHandler } from '../routeHandlers/postModules';
+import { postModuleHandler } from '../routeHandlers/postModule';
 import { delModuleHandler } from '../routeHandlers/delModule';
 import { CustomError } from '../errors/custom-error';
 import { getPermissionsHandler } from '../routeHandlers/getPermissions';
 import { BadMethodError } from '../errors/bad-method-error';
 import { BadRequestError } from '../errors/bad-request-error';
-import { postPermissionsHandler } from '../routeHandlers/postPermissions';
+import { postPermissionHandler } from '../routeHandlers/postPermission';
 import { delPermissionHandler } from '../routeHandlers/delPermission';
 import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
 import { getRolesHandler } from '../routeHandlers/getRoles';
-import { postRolesHandler } from '../routeHandlers/postRoles';
+import { postRoleHandler } from '../routeHandlers/postRole';
 import { delRoleHandler } from '../routeHandlers/delRole';
 import { getOneRoleHandler } from '../routeHandlers/getOneRole';
 import { getUsersHandler } from '../routeHandlers/getUsers';
-import { postUsersHandler } from '../routeHandlers/postUsers';
+import { postUserHandler } from '../routeHandlers/postUser';
+import { getOneUserHandler } from '../routeHandlers/getOneUser';
+import { delUserHandler } from '../routeHandlers/delUser';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -43,13 +45,26 @@ export const handler = async (
 
     try {
         switch (event.resource) {
+            case '/v0/users/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOneUserHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delUserHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
             case '/v0/users':
                 switch (event.httpMethod) {
                     case 'GET':
                         body = await getUsersHandler();
                         break;
                     case 'POST':
-                        body = await postUsersHandler(event);
+                        body = await postUserHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
@@ -62,7 +77,7 @@ export const handler = async (
                         body = await getPermissionsHandler();
                         break;
                     case 'POST':
-                        body = await postPermissionsHandler(event);
+                        body = await postPermissionHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
@@ -75,20 +90,7 @@ export const handler = async (
                         body = await getRolesHandler();
                         break;
                     case 'POST':
-                        body = await postRolesHandler(event);
-                        break;
-                    default:
-                        throw new BadMethodError();
-                }
-                break;
-
-            case '/v0/permissions/{id}':
-                switch (event.httpMethod) {
-                    case 'GET':
-                        body = await getOnePermissionHandler(event);
-                        break;
-                    case 'DELETE':
-                        body = await delPermissionHandler(event);
+                        body = await postRoleHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
@@ -102,6 +104,19 @@ export const handler = async (
                         break;
                     case 'DELETE':
                         body = await delRoleHandler(event);
+                        break;
+                    default:
+                        throw new BadMethodError();
+                }
+                break;
+
+            case '/v0/permissions/{id}':
+                switch (event.httpMethod) {
+                    case 'GET':
+                        body = await getOnePermissionHandler(event);
+                        break;
+                    case 'DELETE':
+                        body = await delPermissionHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
@@ -122,7 +137,7 @@ export const handler = async (
                         body = await getOperationsHandler();
                         break;
                     case 'POST':
-                        body = await postOperationsHandler(event);
+                        body = await postOperationHandler(event);
                         break;
                     default:
                         throw new BadMethodError();
@@ -135,7 +150,7 @@ export const handler = async (
                         body = await getModulesHandler();
                         break;
                     case 'POST':
-                        body = await postModulesHandler(event);
+                        body = await postModuleHandler(event);
                         break;
                     default:
                         throw new BadMethodError();

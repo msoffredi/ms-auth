@@ -111,3 +111,161 @@ it('throws an error if calling POST without proper data', async () => {
     const postResult = await handler(event);
     expect(postResult.statusCode).toEqual(400);
 });
+
+it('should return a 200 and a user on GET with id', async () => {
+    const operationObj = { id: 'op123', name: 'Test operation name' };
+    const operation = await Operation.create(operationObj);
+
+    const moduleObj = { id: 'mod123', name: 'Test module name' };
+    const module = await Module.create(moduleObj);
+
+    const permissionObj = {
+        id: 'per123',
+        name: 'Test permission name',
+        module,
+        operation,
+    };
+    const permission = await Permission.create(permissionObj);
+
+    const roleObj = {
+        id: 'rol123',
+        name: 'Test role username',
+        permissions: [permission],
+    };
+    const role = await Role.create(roleObj);
+
+    const userObj = {
+        id: 'user123',
+        username: 'test@test.com',
+        roles: [role],
+    };
+    await User.create(userObj);
+    const result = await User.get(userObj.id);
+    expect(result).toBeDefined();
+
+    const getEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: userObj.id },
+        },
+    );
+    const result2 = await handler(getEvent);
+
+    expect(result2.statusCode).toEqual(200);
+    expect(JSON.parse(result2.body)).toMatchObject({
+        id: userObj.id,
+        username: userObj.username,
+        roles: [
+            {
+                id: roleObj.id,
+                name: roleObj.name,
+                permissions: [
+                    {
+                        id: permissionObj.id,
+                        name: permissionObj.name,
+                        module: moduleObj,
+                        operation: operationObj,
+                    },
+                ],
+            },
+        ],
+    });
+});
+
+it('throws a 422 error if the id provided to retrieve a user is not found', async () => {
+    const getEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: 'wrong-id' },
+        },
+    );
+    const getResult = await handler(getEvent);
+    expect(getResult.statusCode).toEqual(422);
+});
+
+it('throws an error if we do not provide a user id on get', async () => {
+    const deleteEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/users/{id}',
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(400);
+});
+
+it('deletes a user when calling endpoint with id and DELETE method', async () => {
+    const operationObj = { id: 'op123', name: 'Test operation name' };
+    const operation = await Operation.create(operationObj);
+
+    const moduleObj = { id: 'mod123', name: 'Test module name' };
+    const module = await Module.create(moduleObj);
+
+    const permissionObj = {
+        id: 'per123',
+        name: 'Test permission name',
+        module,
+        operation,
+    };
+    const permission = await Permission.create(permissionObj);
+
+    const roleObj = {
+        id: 'rol123',
+        name: 'Test role username',
+        permissions: [permission],
+    };
+    const role = await Role.create(roleObj);
+
+    const userObj = {
+        id: 'user123',
+        username: 'test@test.com',
+        roles: [role],
+    };
+    await User.create(userObj);
+    const result = await User.get(userObj.id);
+    expect(result).toBeDefined();
+
+    const deleteEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: userObj.id },
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(200);
+
+    const result2 = await User.get(userObj.id);
+    expect(result2).toBeUndefined();
+});
+
+it('throws an error if we do not provide an user id on delete', async () => {
+    const deleteEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/users/{id}',
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(400);
+});
+
+it('throws a 422 error if the id provided to delete a user is not found', async () => {
+    const deleteEvent = constructAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: 'wrong-id' },
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(422);
+});

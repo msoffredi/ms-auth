@@ -6,7 +6,7 @@ import { Role, RoleDoc } from '../models/role';
 import { User, UserDoc } from '../models/user';
 import { Serializers } from '../models/_common';
 
-export const postUsersHandler = async (
+export const postUserHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<UserDoc> => {
     const errors = [];
