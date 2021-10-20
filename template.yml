@@ -50,6 +50,14 @@ Resources:
             Policies:
                 - DynamoDBCrudPolicy:
                       TableName: !Ref DynamoDBOperationsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBModulesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBPermissionsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBRolesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBUsersTable
             Events:
                 Healthcheck:
                     Type: Api
@@ -189,7 +197,7 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
-    DynamoDBModulesTable:
+    DynamoDBPermissionsTable:
         Type: AWS::DynamoDB::Table
         Properties:
             BillingMode: PAY_PER_REQUEST
@@ -201,7 +209,7 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
-    DynamoDBModulesTable:
+    DynamoDBRolesTable:
         Type: AWS::DynamoDB::Table
         Properties:
             BillingMode: PAY_PER_REQUEST
@@ -213,7 +221,7 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
-    DynamoDBModulesTable:
+    DynamoDBUsersTable:
         Type: AWS::DynamoDB::Table
         Properties:
             BillingMode: PAY_PER_REQUEST
