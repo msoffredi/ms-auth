@@ -65,7 +65,7 @@ it('returns 200 and adds a new role on proper POST call', async () => {
 
     const payload = {
         id: 'rol123',
-        name: 'Test role username',
+        name: 'Test role name',
         permissions: [{ id: 'per123' }],
     };
 

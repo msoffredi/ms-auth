@@ -54,7 +54,7 @@ export const postRolesHandler = async (
         const permDoc = await Permission.get(perm.id);
         if (!permDoc) {
             throw new DatabaseError(
-                `Permissions with id ${perm.id} was not found.`,
+                `Permission with id ${perm.id} was not found.`,
             );
         }
         permDocs.push(permDoc);
@@ -67,7 +67,6 @@ export const postRolesHandler = async (
         permissions: permDocs,
     });
 
-    // return await newRole.serialize(Serializers.PopulateAndRemoveTimestamps);
     return new Role(
         await newRole.serialize(Serializers.PopulateAndRemoveTimestamps),
     );
