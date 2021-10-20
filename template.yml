@@ -130,6 +130,27 @@ Resources:
                     Properties:
                         Path: /v0/roles/{id}
                         Method: get
+                # Users endpoints
+                UsersV0Get:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users
+                        Method: get
+                UsersV0Post:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users
+                        Method: post
+                UsersV0Delete:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users/{id}
+                        Method: delete
+                UsersV0GetOne:
+                    Type: Api
+                    Properties:
+                        Path: /v0/users/{id}
+                        Method: get
 
     # Shared layer with Lambda runtime dependencies
     RuntimeDependenciesLayer:
@@ -185,6 +206,18 @@ Resources:
         Properties:
             BillingMode: PAY_PER_REQUEST
             TableName: ms-auth-roles
+            AttributeDefinitions:
+                - AttributeName: id
+                  AttributeType: S
+            KeySchema:
+                - AttributeName: id
+                  KeyType: HASH
+
+    DynamoDBModulesTable:
+        Type: AWS::DynamoDB::Table
+        Properties:
+            BillingMode: PAY_PER_REQUEST
+            TableName: ms-auth-users
             AttributeDefinitions:
                 - AttributeName: id
                   AttributeType: S
