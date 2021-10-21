@@ -11,6 +11,11 @@ Description: RBAC authorization serverless microservice
 Transform:
     - AWS::Serverless-2016-10-31
 
+Parameters:
+    SuperAdminEmail:
+        Type: String
+        Description: The email address of the default user to be added to the Cognito user pool by default
+
 Globals:
     Function:
         Layers:
@@ -206,10 +211,10 @@ Resources:
         Type: AWS::Cognito::UserPoolUser
         Properties:
             UserPoolId: !Ref MsAuthCognitoUserPool
-            Username: test@test.com
+            Username: !Ref SuperAdminEmail
             UserAttributes:
                 - Name: email
-                  Value: test@test.com
+                  Value: !Ref SuperAdminEmail
 
     # MsApiAuthorizer:
     #     Type: 'AWS::ApiGateway::Authorizer'
