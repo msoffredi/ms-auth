@@ -23,6 +23,12 @@ Globals:
         MemorySize: 128
         Timeout: 100
     Api:
+        Auth:
+            Authorizers:
+                MsAuthCognitoAuthorizer:
+                    UserPoolArn: !GetAtt MsAuthCognitoUserPool.Arn
+                    AuthType: COGNITO_USER_POOLS
+            DefaultAuthorizer: MsAuthCognitoAuthorizer
         Cors:
             AllowMethods: "'GET,OPTIONS'"
             AllowHeaders: "'content-type'"
@@ -63,6 +69,8 @@ Resources:
                     Type: Api
                     Properties:
                         Path: /healthcheck
+                        Auth:
+                            Authorizer: NONE
                         Method: get
                 # Operations endpoints
                 OperationsV0Get:
@@ -172,6 +180,46 @@ Resources:
             CompatibleRuntimes:
                 - nodejs14.x
             RetentionPolicy: Retain
+
+    MsAuthCognitoUserPool:
+        Type: AWS::Cognito::UserPool
+        Properties:
+            UserPoolName: MsAuth
+            Policies:
+                PasswordPolicy:
+                    MinimumLength: 8
+            UsernameAttributes:
+                - email
+            Schema:
+                - AttributeDataType: String
+                  Name: email
+                  Required: true
+
+    MyCognitoUserPoolClient:
+        Type: AWS::Cognito::UserPoolClient
+        Properties:
+            UserPoolId: !Ref MsAuthCognitoUserPool
+            ClientName: MsAuthClient
+            GenerateSecret: false
+
+    TestUser:
+        Type: AWS::Cognito::UserPoolUser
+        Properties:
+            UserPoolId: !Ref MsAuthCognitoUserPool
+            Username: test@test.com
+            UserAttributes:
+                - Name: email
+                  Value: test@test.com
+
+    # MsApiAuthorizer:
+    #     Type: 'AWS::ApiGateway::Authorizer'
+    #     Properties:
+    #         Name: MsAuthCognitoAuthorizer
+    #         Type: COGNITO_USER_POOLS
+    #         RestApiId: !Ref ServerlessRestApi
+    #         IdentitySource: method.request.header.authorization
+    #         ProviderARNs:
+    #             - !GetAtt MsAuthCognitoUserPool.Arn
 
     DynamoDBOperationsTable:
         Type: AWS::DynamoDB::Table
