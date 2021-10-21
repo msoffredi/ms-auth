@@ -14,18 +14,15 @@ jobs:
                   aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   aws-region: ${{ secrets.AWS_REGION }}
 
-            # sam build
-            - run: sam build --use-container
+            - name: SAM Build
+              run: sam build --use-container
 
-            # Run Unit tests- Specify unit tests here
-
-            # sam deploy
-            - run: |
-              sam deploy \
-                --no-confirm-changeset \
-                --no-fail-on-empty-changeset \
-                --stack-name ms-auth \
-                --s3-bucket ms-auth-deploy-dev \
-                --capabilities CAPABILITY_IAM \
-                --region ${{ secrets.AWS_REGION }} \
-                --parameter-overrides SuperAdminEmail=${{ secrets.SUPER_ADMIN_EMAIL }}
+            - name: SAM Deploy
+              run: sam deploy \
+                  --no-confirm-changeset \
+                  --no-fail-on-empty-changeset \
+                  --stack-name ms-auth \
+                  --s3-bucket ms-auth-deploy-dev \
+                  --capabilities CAPABILITY_IAM \
+                  --region ${{ secrets.AWS_REGION }} \
+                  --parameter-overrides SuperAdminEmail=${{ secrets.SUPER_ADMIN_EMAIL }}
