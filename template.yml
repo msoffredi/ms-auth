@@ -15,6 +15,9 @@ Parameters:
     SuperAdminEmail:
         Type: String
         Description: The email address of the default user to be added to the Cognito user pool by default
+    AuthDomainName:
+        Type: String
+        Description: Prefix for the domain name Cognito uses for its UI (must be unique in the entire AWS)
 
 Globals:
     Function:
@@ -207,6 +210,12 @@ Resources:
             ClientName: MsAuthClient
             GenerateSecret: false
 
+    AuthDomain:
+        Type: AWS::Cognito::UserPoolDomain
+        Properties:
+            UserPoolId: !Ref MsAuthCognitoUserPool
+            Domain: !Ref AuthDomainName
+
     TestUser:
         Type: AWS::Cognito::UserPoolUser
         Properties:
@@ -215,16 +224,6 @@ Resources:
             UserAttributes:
                 - Name: email
                   Value: !Ref SuperAdminEmail
-
-    # MsApiAuthorizer:
-    #     Type: 'AWS::ApiGateway::Authorizer'
-    #     Properties:
-    #         Name: MsAuthCognitoAuthorizer
-    #         Type: COGNITO_USER_POOLS
-    #         RestApiId: !Ref ServerlessRestApi
-    #         IdentitySource: method.request.header.authorization
-    #         ProviderARNs:
-    #             - !GetAtt MsAuthCognitoUserPool.Arn
 
     DynamoDBOperationsTable:
         Type: AWS::DynamoDB::Table
