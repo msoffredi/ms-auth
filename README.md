@@ -16,6 +16,8 @@ The application is 100% setup to spin up locally for development purposes (using
 
 -
 
+## Dev deployment
+
 ### Adding secrets to your GitHub repository
 
 In order for the GitHub action to work you need to add some secrets to your GitHub repository. These are the secrets and what to include in them:
