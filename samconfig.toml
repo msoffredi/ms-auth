@@ -1,7 +1,0 @@
-version = 0.1
-[default]
-[default.deploy]
-[default.deploy.parameters]
-stack_name = "ms-auth"
-s3_prefix = "ms-auth"
-capabilities = "CAPABILITY_IAM"
