@@ -21,8 +21,6 @@ jobs:
               run: sam deploy \
                   --no-confirm-changeset \
                   --no-fail-on-empty-changeset \
-                  --stack-name ms-auth \
-                  --s3-bucket ms-auth-deploy-dev \
-                  --capabilities CAPABILITY_IAM \
+                  --s3-bucket ${{ secrets.DEPLOY_S3_BUCKET }} \
                   --region ${{ secrets.AWS_REGION }} \
                   --parameter-overrides SuperAdminEmail=${{ secrets.SUPER_ADMIN_EMAIL }}

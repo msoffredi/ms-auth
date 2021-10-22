@@ -23,3 +23,5 @@ In order for the GitHub action to work you need to add some secrets to your GitH
 -   `AWS_REGION` = Your prefered region, e.g. us-east-1
 -   `AWS_ACCESS_KEY_ID` = A valid AWS account user access key (must have enough privileges to deploy the stack)
 -   `AWS_SECRET_ACCESS_KEY` = A matching secret access key for the same user above
+-   `SUPER_ADMIN_EMAIL` = The email address of the super admin added as first user to the user pool
+-   `DEPLOY_S3_BUCKET` = An S3 bucket name to use for deployment purposes
