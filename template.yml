@@ -210,7 +210,9 @@ Resources:
             ClientName: MsAuthClient
             GenerateSecret: false
             # You can edit this in the future to match your desired callback URL
-            CallBackURLs: 'http://test.com'
+            CallbackURLs:
+                - https://test.com
+            AllowedOAuthFlowsUserPoolClient: true
             AllowedOAuthFlows:
                 - code
                 - implicit
