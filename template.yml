@@ -209,7 +209,19 @@ Resources:
             UserPoolId: !Ref MsAuthCognitoUserPool
             ClientName: MsAuthClient
             GenerateSecret: false
-
+            # You can edit this in the future to match your desired callback URL
+            CallBackURLs:
+                - http://test.com
+            AllowedOAuthFlows:
+                - code
+                - implicit
+            AllowedOAuthScopes:
+                - email
+                - openid
+                - profile
+                - aws.cognito.signin.user.admin
+            SupportedIdentityProviders:
+                - COGNITO
     AuthDomain:
         Type: AWS::Cognito::UserPoolDomain
         Properties:
