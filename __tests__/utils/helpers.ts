@@ -74,6 +74,10 @@ export const addUserWithPermissions = async () => {
         id: AuthorizationModules.Modules,
         name: 'Authorization Modules',
     });
+    const authorizationOperation = await Module.create({
+        id: AuthorizationModules.Operations,
+        name: 'Authorization Operations',
+    });
 
     // Add Permissions
     const readModulesPermission = await Permission.create({
@@ -94,6 +98,24 @@ export const addUserWithPermissions = async () => {
         module: authorizationModule,
         operation: deleteOperation,
     });
+    const readOperationsPermission = await Permission.create({
+        id: 'authorization-api-read-operations',
+        name: 'Authorization API Read Operations',
+        module: authorizationOperation,
+        operation: readOperation,
+    });
+    const addOperationPermission = await Permission.create({
+        id: 'authorization-api-add-operation',
+        name: 'Authorization API Add Operation',
+        module: authorizationOperation,
+        operation: addOperation,
+    });
+    const deleteOperationPermission = await Permission.create({
+        id: 'authorization-api-delete-operation',
+        name: 'Authorization API Delete Operation',
+        module: authorizationOperation,
+        operation: deleteOperation,
+    });
 
     // Add Roles
     const role = await Role.create({
@@ -103,6 +125,9 @@ export const addUserWithPermissions = async () => {
             readModulesPermission,
             addModulePermission,
             deleteModulePermission,
+            readOperationsPermission,
+            addOperationPermission,
+            deleteOperationPermission,
         ],
     });
 

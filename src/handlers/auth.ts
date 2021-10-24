@@ -143,10 +143,18 @@ export const handler = async (
             case '/v0/operations':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getOperationsHandler(event);
+                        body = await routeAuthorizer(
+                            event,
+                            getOperationsHandler,
+                            [auth.Operations.ReadOperations],
+                        );
                         break;
                     case 'POST':
-                        body = await postOperationHandler(event);
+                        body = await routeAuthorizer(
+                            event,
+                            postOperationHandler,
+                            [auth.Operations.AddOperation],
+                        );
                         break;
                     default:
                         throw new BadMethodError();
@@ -182,7 +190,9 @@ export const handler = async (
 
             case '/v0/operations/{id}':
                 if (event.httpMethod === 'DELETE') {
-                    body = await delOperationHandler(event);
+                    body = await routeAuthorizer(event, delOperationHandler, [
+                        auth.Operations.DeleteOperation,
+                    ]);
                 } else {
                     throw new BadMethodError();
                 }
