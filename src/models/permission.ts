@@ -32,6 +32,27 @@ const Permission = dynamoose.model<PermissionDoc>(
     localModelOptions,
 );
 
+Permission.methods.set('getAll', async (): Promise<PermissionDoc[]> => {
+    const permissions = await Permission.scan().all().exec();
+
+    const promises = Permission.serializeMany(
+        permissions,
+        Serializers.PopulateAndRemoveTimestamps,
+    );
+
+    // This code below is to resolve the fact dynamoose Model.serializeMany()
+    // does not resolve promises in the Document.serialize()
+    const formattedPermissions: PermissionDoc[] = [];
+    if (promises instanceof Array) {
+        for (const promise of promises) {
+            const obj = new Permission(await promise);
+            formattedPermissions.push(obj);
+        }
+    }
+
+    return formattedPermissions;
+});
+
 Permission.serializer.add(
     Serializers.RemoveTimestamps,
     SerializersOptions[Serializers.RemoveTimestamps],

@@ -2,6 +2,7 @@ import dynamoose from 'dynamoose';
 import 'source-map-support/register';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
+
 import { getOperationsHandler } from '../routeHandlers/getOperations';
 import { ResponseBody, ServiceStatus } from './types';
 import { postOperationHandler } from '../routeHandlers/postOperation';
@@ -24,6 +25,8 @@ import { getUsersHandler } from '../routeHandlers/getUsers';
 import { postUserHandler } from '../routeHandlers/postUser';
 import { getOneUserHandler } from '../routeHandlers/getOneUser';
 import { delUserHandler } from '../routeHandlers/delUser';
+import { routeAuthorizer } from '../middlewares/route-authorizer';
+import { Config } from '../config';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -40,6 +43,12 @@ export const handler = async (
     // All log statements are written to CloudWatch
     console.debug('Received event:', event);
 
+    // if (event.headers.Authorization) {
+    //     const [, token] = event.headers.Authorization.split(' ');
+    //     console.debug('Decoded token:', jwt.decode(token));
+    // }
+
+    const auth = Config.Authorization;
     let status = 200;
     let body: ResponseBody = null;
 
@@ -134,7 +143,7 @@ export const handler = async (
             case '/v0/operations':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getOperationsHandler();
+                        body = await getOperationsHandler(event);
                         break;
                     case 'POST':
                         body = await postOperationHandler(event);
@@ -147,10 +156,14 @@ export const handler = async (
             case '/v0/modules':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getModulesHandler();
+                        body = await routeAuthorizer(event, getModulesHandler, [
+                            auth.Modules.ReadModules,
+                        ]);
                         break;
                     case 'POST':
-                        body = await postModuleHandler(event);
+                        body = await routeAuthorizer(event, postModuleHandler, [
+                            auth.Modules.AddModule,
+                        ]);
                         break;
                     default:
                         throw new BadMethodError();
@@ -159,7 +172,9 @@ export const handler = async (
 
             case '/v0/modules/{id}':
                 if (event.httpMethod === 'DELETE') {
-                    body = await delModuleHandler(event);
+                    body = await routeAuthorizer(event, delModuleHandler, [
+                        auth.Modules.DeleteModule,
+                    ]);
                 } else {
                     throw new BadMethodError();
                 }

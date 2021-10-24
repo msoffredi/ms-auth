@@ -1,5 +1,4 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { randomUUID } from 'crypto';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { Role, RoleDoc } from '../models/role';
@@ -15,17 +14,17 @@ export const postUserHandler = async (
         throw new RequestValidationError([
             {
                 message:
-                    'You need to provide a username, and an array of roles to create a user',
+                    'You need to provide a user id and an array of roles to create a user',
             },
         ]);
     }
 
     const request = JSON.parse(event.body);
 
-    if (!request.username) {
+    if (!request.id || request.id.trim() === '') {
         errors.push({
-            message: 'Username field missing in provided body',
-            field: 'username',
+            message: 'User id is missing in provided body',
+            field: 'id',
         });
     }
 
@@ -58,10 +57,8 @@ export const postUserHandler = async (
         roleDocs.push(roleDoc);
     }
 
-    const id = request.id ?? randomUUID();
     const newUser = await User.create({
-        id,
-        username: request.username,
+        id: request.id,
         roles: roleDocs,
     });
 

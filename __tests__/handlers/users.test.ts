@@ -34,8 +34,7 @@ it('should return a 200 and array of users', async () => {
     const role = await Role.create(roleObj);
 
     const userObj = {
-        id: 'user123',
-        username: 'test@test.com',
+        id: 'test@test.com',
         roles: [role],
     };
     await User.create(userObj);
@@ -44,7 +43,6 @@ it('should return a 200 and array of users', async () => {
     expect(result.statusCode).toEqual(200);
     expect(JSON.parse(result.body)[0]).toMatchObject({
         id: userObj.id,
-        username: userObj.username,
         roles: [
             {
                 id: roleObj.id,
@@ -135,8 +133,7 @@ it('should return a 200 and a user on GET with id', async () => {
     const role = await Role.create(roleObj);
 
     const userObj = {
-        id: 'user123',
-        username: 'test@test.com',
+        id: 'test@test.com',
         roles: [role],
     };
     await User.create(userObj);
@@ -156,7 +153,6 @@ it('should return a 200 and a user on GET with id', async () => {
     expect(result2.statusCode).toEqual(200);
     expect(JSON.parse(result2.body)).toMatchObject({
         id: userObj.id,
-        username: userObj.username,
         roles: [
             {
                 id: roleObj.id,

@@ -5,7 +5,6 @@ import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface UserDoc extends Document {
     id: string;
-    username: string;
     roles: RoleDoc[];
 }
 
@@ -15,12 +14,8 @@ const userSchema = new dynamoose.Schema(
             type: String,
             hashKey: true,
         },
-        username: {
-            type: String,
-            required: true,
-        },
         roles: {
-            type: Array,
+            type: Set,
             schema: [Role],
         },
     },

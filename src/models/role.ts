@@ -17,7 +17,7 @@ const roleSchema = new dynamoose.Schema(
         },
         name: String,
         permissions: {
-            type: Array,
+            type: Set,
             schema: [Permission],
         },
     },
