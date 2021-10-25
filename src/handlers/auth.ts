@@ -83,10 +83,18 @@ export const handler = async (
             case '/v0/permissions':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getPermissionsHandler();
+                        body = await routeAuthorizer(
+                            event,
+                            getPermissionsHandler,
+                            [auth.Permissions.ReadPermissions],
+                        );
                         break;
                     case 'POST':
-                        body = await postPermissionHandler(event);
+                        body = await routeAuthorizer(
+                            event,
+                            postPermissionHandler,
+                            [auth.Permissions.AddPermission],
+                        );
                         break;
                     default:
                         throw new BadMethodError();
@@ -122,10 +130,18 @@ export const handler = async (
             case '/v0/permissions/{id}':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getOnePermissionHandler(event);
+                        body = await routeAuthorizer(
+                            event,
+                            getOnePermissionHandler,
+                            [auth.Permissions.ReadPermissions],
+                        );
                         break;
                     case 'DELETE':
-                        body = await delPermissionHandler(event);
+                        body = await routeAuthorizer(
+                            event,
+                            delPermissionHandler,
+                            [auth.Permissions.DeletePermission],
+                        );
                         break;
                     default:
                         throw new BadMethodError();

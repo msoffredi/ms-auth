@@ -34,5 +34,19 @@ export const Config: ConfigType = {
                 operationId: AuthorizationOperations.Add,
             },
         },
+        Permissions: {
+            ReadPermissions: {
+                moduleId: AuthorizationModules.Permissions,
+                operationId: AuthorizationOperations.Read,
+            },
+            DeletePermission: {
+                moduleId: AuthorizationModules.Permissions,
+                operationId: AuthorizationOperations.Delete,
+            },
+            AddPermission: {
+                moduleId: AuthorizationModules.Permissions,
+                operationId: AuthorizationOperations.Add,
+            },
+        },
     },
 };

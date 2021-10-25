@@ -12,6 +12,11 @@ export interface ConfigType {
             DeleteOperation: AuthPermission;
             AddOperation: AuthPermission;
         };
+        Permissions: {
+            ReadPermissions: AuthPermission;
+            DeletePermission: AuthPermission;
+            AddPermission: AuthPermission;
+        };
     };
 }
 
