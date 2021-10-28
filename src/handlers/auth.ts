@@ -52,9 +52,12 @@ export const handler = async (
             case '/v0/users/{id}':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await routeAuthorizer(event, getOneUserHandler, [
-                            auth.Users.ReadUsers,
-                        ]);
+                        body = await routeAuthorizer(
+                            event,
+                            getOneUserHandler,
+                            [auth.Users.ReadUsers],
+                            true,
+                        );
                         break;
                     case 'DELETE':
                         body = await routeAuthorizer(event, delUserHandler, [

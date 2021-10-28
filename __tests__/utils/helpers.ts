@@ -11,6 +11,7 @@ import { Role } from '../../src/models/role';
 import { User } from '../../src/models/user';
 
 export const testUserEmail = 'test@test.com';
+export const readUsersPermissionId = 'authorization-api-read-users';
 
 export function constructAPIGwEvent(
     message: unknown,
@@ -36,10 +37,11 @@ export function constructAPIGwEvent(
 export const constructAuthenticatedAPIGwEvent = (
     message: unknown,
     options: Record<string, unknown>,
+    userEmail = testUserEmail,
 ): APIGatewayProxyEvent => {
     const token = jwt.sign(
         {
-            email: testUserEmail,
+            email: userEmail,
         },
         'test',
     );
@@ -165,7 +167,7 @@ export const addUserWithPermissions = async () => {
         operationId: deleteOperation.id,
     });
     const readUsersPermission = await Permission.create({
-        id: 'authorization-api-read-users',
+        id: readUsersPermissionId,
         name: 'Authorization API Read Users',
         moduleId: authorizationUser.id,
         operationId: readOperation.id,
