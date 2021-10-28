@@ -1,7 +1,6 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 
-import { ResponseBody } from '../handlers/types';
+import { APIGatewayExtendedEvent, ResponseBody } from '../handlers/types';
 import { UnauthorizedError } from '../errors/unauthorized-error';
 import { User } from '../models/user';
 import { Permission } from '../models/permission';
@@ -14,7 +13,7 @@ export interface AuthPermission {
 }
 
 export const routeAuthorizer = async (
-    event: APIGatewayProxyEvent,
+    event: APIGatewayExtendedEvent,
     routeHandler: RouteHandler,
     validPermissions: AuthPermission[] = [],
     allowOwnRead = false,
@@ -97,6 +96,12 @@ export const routeAuthorizer = async (
                     throw new Error(
                         'Authenticated user has insufficient permissions',
                     );
+                } else if (
+                    event.pathParameters &&
+                    event.pathParameters.id &&
+                    event.pathParameters.id === user.id
+                ) {
+                    event.currentUser = user;
                 }
             }
         }

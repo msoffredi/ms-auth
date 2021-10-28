@@ -1,10 +1,12 @@
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
+import { PermissionDoc } from './permission';
 import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface UserDoc extends Document {
     id: string;
     roles: string[];
+    permissions?: PermissionDoc[];
 }
 
 const userSchema = new dynamoose.Schema(

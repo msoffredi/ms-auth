@@ -209,5 +209,33 @@ it('should return a 200 and a user on GET with id equal to the logged in user an
     const result = await handler(getEvent);
 
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body).id).toEqual(testUserEmail);
+    const body = JSON.parse(result.body);
+    expect(body.id).toEqual(testUserEmail);
+    expect(body.permissions).toBeDefined();
+    expect(body.permissions.length).toBeGreaterThan(0);
+});
+
+it('should return 401 on GET with a user without permission and not requesting own id', async () => {
+    const user = await User.get(testUserEmail);
+    const role = await Role.get(user.roles[0]);
+    role.permissions = role.permissions.filter((perm) => {
+        if (perm === readUsersPermissionId) {
+            return false;
+        }
+
+        return true;
+    });
+    await role.save();
+
+    const getEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: 'other-user' },
+        },
+    );
+    const result = await handler(getEvent);
+
+    expect(result.statusCode).toEqual(401);
 });
