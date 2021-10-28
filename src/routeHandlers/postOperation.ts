@@ -3,8 +3,9 @@ import { randomUUID } from 'crypto';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { Operation, OperationDoc } from '../models/operation';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const postOperationHandler = async (
+export const postOperationHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<OperationDoc> => {
     if (!event.body) {

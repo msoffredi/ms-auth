@@ -1,12 +1,11 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { randomUUID } from 'crypto';
-import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
-import { Role, RoleDoc } from '../models/role';
+import { Role } from '../models/role';
 import { User, UserDoc } from '../models/user';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const postUserHandler = async (
+export const postUserHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<UserDoc> => {
     const errors = [];
@@ -15,17 +14,17 @@ export const postUserHandler = async (
         throw new RequestValidationError([
             {
                 message:
-                    'You need to provide a username, and an array of roles to create a user',
+                    'You need to provide a user id and an array of roles to create a user',
             },
         ]);
     }
 
     const request = JSON.parse(event.body);
 
-    if (!request.username) {
+    if (!request.id || request.id.trim() === '') {
         errors.push({
-            message: 'Username field missing in provided body',
-            field: 'username',
+            message: 'User id is missing in provided body',
+            field: 'id',
         });
     }
 
@@ -42,30 +41,27 @@ export const postUserHandler = async (
             message: 'Roles array field invalid or empty',
             field: 'roles',
         });
+    } else {
+        // Validate roles and prepare them for the INSERT
+        for (const role of roles) {
+            const roleDoc = await Role.get(role);
+            if (!roleDoc) {
+                errors.push({
+                    message: `Role with id ${role} was not found.`,
+                    field: 'roles',
+                });
+            }
+        }
     }
 
     if (errors.length) {
         throw new RequestValidationError(errors);
     }
 
-    // Validate roles and prepare them for the INSERT
-    const roleDocs: RoleDoc[] = [];
-    for (const role of roles) {
-        const roleDoc = await Role.get(role.id);
-        if (!roleDoc) {
-            throw new DatabaseError(`Role with id ${role.id} was not found.`);
-        }
-        roleDocs.push(roleDoc);
-    }
-
-    const id = request.id ?? randomUUID();
     const newUser = await User.create({
-        id,
-        username: request.username,
-        roles: roleDocs,
+        id: request.id,
+        roles: roles,
     });
 
-    return new User(
-        await newUser.serialize(Serializers.PopulateAndRemoveTimestamps),
-    );
+    return new User(await newUser.serialize(Serializers.RemoveTimestamps));
 };

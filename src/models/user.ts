@@ -1,12 +1,10 @@
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
-import { RoleDoc, Role } from './role';
 import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface UserDoc extends Document {
     id: string;
-    username: string;
-    roles: RoleDoc[];
+    roles: string[];
 }
 
 const userSchema = new dynamoose.Schema(
@@ -15,13 +13,9 @@ const userSchema = new dynamoose.Schema(
             type: String,
             hashKey: true,
         },
-        username: {
-            type: String,
-            required: true,
-        },
         roles: {
             type: Array,
-            schema: [Role],
+            schema: [String],
         },
     },
     {
@@ -37,11 +31,6 @@ const User = dynamoose.model<UserDoc>(
 User.serializer.add(
     Serializers.RemoveTimestamps,
     SerializersOptions[Serializers.RemoveTimestamps],
-);
-
-User.serializer.add(
-    Serializers.PopulateAndRemoveTimestamps,
-    SerializersOptions[Serializers.PopulateAndRemoveTimestamps],
 );
 
 export { User, UserDoc };

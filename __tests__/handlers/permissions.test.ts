@@ -1,15 +1,17 @@
-import { constructAPIGwEvent } from '../utils/helpers';
+import {
+    addUserWithPermissions,
+    constructAuthenticatedAPIGwEvent,
+} from '../utils/helpers';
 import { handler } from '../../src/handlers/auth';
 import { Operation } from '../../src/models/operation';
 import { Module } from '../../src/models/module';
-import { Permission } from '../../src/models/permission';
+import { Permission, PermissionDoc } from '../../src/models/permission';
 
-const getAllEvent = constructAPIGwEvent(
-    {},
-    { method: 'GET', resource: '/v0/permissions' },
-);
+beforeEach(async () => {
+    await addUserWithPermissions();
+});
 
-it('should return a 200 and array of permissions', async () => {
+const addPermission = async (): Promise<PermissionDoc> => {
     const operationObj = { id: 'op123', name: 'Test operation name' };
     const operation = await Operation.create(operationObj);
 
@@ -19,19 +21,22 @@ it('should return a 200 and array of permissions', async () => {
     const permission = {
         id: 'per123',
         name: 'Test permission name',
-        module,
-        operation,
+        moduleId: module.id,
+        operationId: operation.id,
     };
-    await Permission.create(permission);
+    return await Permission.create(permission);
+};
 
+it('should return a 200 and array of permissions', async () => {
+    await addPermission();
+
+    const getAllEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        { method: 'GET', resource: '/v0/permissions' },
+    );
     const result = await handler(getAllEvent);
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body)[0]).toMatchObject({
-        id: permission.id,
-        name: permission.name,
-        module: moduleObj,
-        operation: operationObj,
-    });
+    expect(JSON.parse(result.body).length).toBeGreaterThan(0);
 });
 
 it('should add a new permission on POST with proper data', async () => {
@@ -42,12 +47,12 @@ it('should add a new permission on POST with proper data', async () => {
     await Module.create(module);
 
     const newPerm = {
-        id: 'abc123',
+        id: 'per123',
         name: 'Test permission name',
         module_id: module.id,
         operation_id: operation.id,
     };
-    const event = constructAPIGwEvent(newPerm, {
+    const event = constructAuthenticatedAPIGwEvent(newPerm, {
         method: 'POST',
         resource: '/v0/permissions',
     });
@@ -57,17 +62,16 @@ it('should add a new permission on POST with proper data', async () => {
     expect(JSON.parse(postResult.body)).toMatchObject({
         id: newPerm.id,
         name: newPerm.name,
-        module,
-        operation,
+        moduleId: module.id,
+        operationId: operation.id,
     });
 
-    const getResult = await handler(getAllEvent);
-    expect(getResult.statusCode).toEqual(200);
-    expect(JSON.parse(getResult.body).length).toEqual(1);
+    const perm = await Permission.get(newPerm.id);
+    expect(perm).toBeDefined();
 });
 
 it('throws an error if calling POST without proper data', async () => {
-    const event = constructAPIGwEvent(
+    const event = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'POST',
@@ -80,24 +84,9 @@ it('throws an error if calling POST without proper data', async () => {
 });
 
 it('deletes a permission when calling endpoint with id and DELETE method', async () => {
-    const operation = await Operation.create({
-        id: 'op123',
-        name: 'Test operation name',
-    });
-    const module = await Module.create({
-        id: 'mod123',
-        name: 'Test module name',
-    });
+    const permission = await addPermission();
 
-    const permission = {
-        id: 'perm123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    await Permission.create(permission);
-
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -108,12 +97,12 @@ it('deletes a permission when calling endpoint with id and DELETE method', async
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    const getResult = await handler(getAllEvent);
-    expect(JSON.parse(getResult.body)).toEqual([]);
+    const perm = await Permission.get(permission.id);
+    expect(perm).toBeUndefined();
 });
 
 it('throws an error if we do not provide an permission id on delete', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -125,7 +114,7 @@ it('throws an error if we do not provide an permission id on delete', async () =
 });
 
 it('throws a 422 error if the id provided for a delete permission is not found', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -138,21 +127,9 @@ it('throws a 422 error if the id provided for a delete permission is not found',
 });
 
 it('should return a 200 and a permissions on GET with id', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
+    const permission = await addPermission();
 
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permission = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    await Permission.create(permission);
-
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
@@ -163,16 +140,11 @@ it('should return a 200 and a permissions on GET with id', async () => {
     const result = await handler(getEvent);
 
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body)).toMatchObject({
-        id: permission.id,
-        name: permission.name,
-        module: moduleObj,
-        operation: operationObj,
-    });
+    expect(JSON.parse(result.body).id).toEqual(permission.id);
 });
 
 it('throws a 422 error if the id provided to retrieve a permission is not found', async () => {
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
@@ -185,13 +157,13 @@ it('throws a 422 error if the id provided to retrieve a permission is not found'
 });
 
 it('throws an error if we do not provide an permission id on get', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const getOneEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
             resource: '/v0/permissions/{id}',
         },
     );
-    const delResult = await handler(deleteEvent);
+    const delResult = await handler(getOneEvent);
     expect(delResult.statusCode).toEqual(400);
 });

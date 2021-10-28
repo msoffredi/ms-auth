@@ -6,8 +6,9 @@ import { Module } from '../models/module';
 import { Operation } from '../models/operation';
 import { Permission, PermissionDoc } from '../models/permission';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const postPermissionHandler = async (
+export const postPermissionHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<PermissionDoc> => {
     const errors = [];
@@ -64,11 +65,11 @@ export const postPermissionHandler = async (
     const newPermission = await Permission.create({
         id,
         name: request.name,
-        module,
-        operation,
+        moduleId: module.id,
+        operationId: operation.id,
     });
 
     return new Permission(
-        await newPermission.serialize(Serializers.PopulateAndRemoveTimestamps),
+        await newPermission.serialize(Serializers.RemoveTimestamps),
     );
 };

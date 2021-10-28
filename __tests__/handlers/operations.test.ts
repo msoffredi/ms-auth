@@ -1,15 +1,22 @@
-import { constructAPIGwEvent } from '../utils/helpers';
+import {
+    addUserWithPermissions,
+    constructAuthenticatedAPIGwEvent,
+} from '../utils/helpers';
 import { handler } from '../../src/handlers/auth';
 import { Operation } from '../../src/models/operation';
 
-const getAllEvent = constructAPIGwEvent(
-    {},
-    { method: 'GET', resource: '/v0/operations' },
-);
+beforeEach(async () => {
+    await addUserWithPermissions();
+});
 
 it('should return a 200 and array of operations', async () => {
     const operation = { id: 'op123', name: 'Test operation name' };
     await Operation.create(operation);
+
+    const getAllEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        { method: 'GET', resource: '/v0/operations' },
+    );
 
     const result = await handler(getAllEvent);
 
@@ -19,7 +26,7 @@ it('should return a 200 and array of operations', async () => {
 
 it('should add a new operation on POST with proper data', async () => {
     const newOp = { id: 'test', name: 'Test name' };
-    const event = constructAPIGwEvent(newOp, {
+    const event = constructAuthenticatedAPIGwEvent(newOp, {
         method: 'POST',
         resource: '/v0/operations',
     });
@@ -31,17 +38,15 @@ it('should add a new operation on POST with proper data', async () => {
     };
     expect(postResult).toEqual(expectedResult);
 
-    const getResult = await handler(getAllEvent);
-
-    expect(getResult.statusCode).toEqual(200);
-    expect(JSON.parse(getResult.body)).toMatchObject([newOp]);
+    const operation = await Operation.get(newOp.id);
+    expect(operation).toBeDefined();
 });
 
 it('deletes an operation when calling endpoint with id and DELETE method', async () => {
     const operation = { id: 'op123', name: 'Test operation name' };
     await Operation.create(operation);
 
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -52,12 +57,12 @@ it('deletes an operation when calling endpoint with id and DELETE method', async
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    const getResult = await handler(getAllEvent);
-    expect(JSON.parse(getResult.body)).toEqual([]);
+    const testOp = await Operation.get(operation.id);
+    expect(testOp).toBeUndefined();
 });
 
 it('throws an error if we do not provide an operation id on delete', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -69,7 +74,7 @@ it('throws an error if we do not provide an operation id on delete', async () =>
 });
 
 it('throws an error if calling POST without proper data', async () => {
-    const event = constructAPIGwEvent(
+    const event = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'POST',
@@ -82,7 +87,7 @@ it('throws an error if calling POST without proper data', async () => {
 });
 
 it('throws a 422 error if the id provided for a delete operation is not found', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',

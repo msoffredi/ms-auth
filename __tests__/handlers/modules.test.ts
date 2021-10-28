@@ -1,25 +1,31 @@
-import { constructAPIGwEvent } from '../utils/helpers';
+import {
+    addUserWithPermissions,
+    constructAuthenticatedAPIGwEvent,
+} from '../utils/helpers';
 import { handler } from '../../src/handlers/auth';
 import { Module } from '../../src/models/module';
 
-const getAllEvent = constructAPIGwEvent(
-    {},
-    { method: 'GET', resource: '/v0/modules' },
-);
+beforeEach(async () => {
+    await addUserWithPermissions();
+});
 
 it('should return a 200 and array of modules', async () => {
     const module = { id: 'mod123', name: 'Test module name' };
     await Module.create(module);
 
+    const getAllEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        { method: 'GET', resource: '/v0/modules' },
+    );
     const result = await handler(getAllEvent);
 
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body)[0]).toMatchObject(module);
+    expect(JSON.parse(result.body).length).toBeGreaterThan(0);
 });
 
 it('should add a new module on POST with proper data', async () => {
     const newMod = { id: 'test', name: 'Test name' };
-    const event = constructAPIGwEvent(newMod, {
+    const event = constructAuthenticatedAPIGwEvent(newMod, {
         method: 'POST',
         resource: '/v0/modules',
     });
@@ -31,17 +37,15 @@ it('should add a new module on POST with proper data', async () => {
     };
     expect(postResult).toEqual(expectedResult);
 
-    const getResult = await handler(getAllEvent);
-
-    expect(getResult.statusCode).toEqual(200);
-    expect(JSON.parse(getResult.body)).toMatchObject([newMod]);
+    const module = await Module.get(newMod.id);
+    expect(module).toBeDefined();
 });
 
 it('deletes a module when calling endpoint with id and DELETE method', async () => {
     const module = { id: 'mod123', name: 'Test module name' };
     await Module.create(module);
 
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -52,12 +56,12 @@ it('deletes a module when calling endpoint with id and DELETE method', async () 
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    const getResult = await handler(getAllEvent);
-    expect(JSON.parse(getResult.body)).toEqual([]);
+    const delMod = await Module.get(module.id);
+    expect(delMod).toBeUndefined();
 });
 
 it('throws an error if we do not provide a module id on delete', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -69,7 +73,7 @@ it('throws an error if we do not provide a module id on delete', async () => {
 });
 
 it('throws an error if calling POST without proper data', async () => {
-    const event = constructAPIGwEvent(
+    const event = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'POST',
@@ -84,7 +88,7 @@ it('throws an error if calling POST without proper data', async () => {
 });
 
 it('throws a 422 error if the id provided for a delete module is not found', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',

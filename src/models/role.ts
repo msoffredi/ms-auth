@@ -1,12 +1,11 @@
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
-import { Permission, PermissionDoc } from './permission';
 import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface RoleDoc extends Document {
     id: string;
     name: string;
-    permissions: PermissionDoc[];
+    permissions: string[];
 }
 
 const roleSchema = new dynamoose.Schema(
@@ -16,9 +15,10 @@ const roleSchema = new dynamoose.Schema(
             hashKey: true,
         },
         name: String,
+        // Should be an array of permission IDs (strings)
         permissions: {
             type: Array,
-            schema: [Permission],
+            schema: [String],
         },
     },
     {
@@ -34,11 +34,6 @@ const Role = dynamoose.model<RoleDoc>(
 Role.serializer.add(
     Serializers.RemoveTimestamps,
     SerializersOptions[Serializers.RemoveTimestamps],
-);
-
-Role.serializer.add(
-    Serializers.PopulateAndRemoveTimestamps,
-    SerializersOptions[Serializers.PopulateAndRemoveTimestamps],
 );
 
 export { Role, RoleDoc };

@@ -2,16 +2,18 @@ import { handler } from '../../src/handlers/auth';
 import { Module } from '../../src/models/module';
 import { Operation } from '../../src/models/operation';
 import { Permission } from '../../src/models/permission';
-import { Role } from '../../src/models/role';
-import { User } from '../../src/models/user';
-import { constructAPIGwEvent } from '../utils/helpers';
+import { Role, RoleDoc } from '../../src/models/role';
+import { User, UserDoc } from '../../src/models/user';
+import {
+    addUserWithPermissions,
+    constructAuthenticatedAPIGwEvent,
+} from '../utils/helpers';
 
-const getAllEvent = constructAPIGwEvent(
-    {},
-    { method: 'GET', resource: '/v0/users' },
-);
+beforeEach(async () => {
+    await addUserWithPermissions();
+});
 
-it('should return a 200 and array of users', async () => {
+const addRole = async (): Promise<RoleDoc> => {
     const operationObj = { id: 'op123', name: 'Test operation name' };
     const operation = await Operation.create(operationObj);
 
@@ -21,76 +23,55 @@ it('should return a 200 and array of users', async () => {
     const permissionObj = {
         id: 'per123',
         name: 'Test permission name',
-        module,
-        operation,
+        moduleId: module.id,
+        operationId: operation.id,
     };
     const permission = await Permission.create(permissionObj);
 
     const roleObj = {
         id: 'rol123',
         name: 'Test role username',
-        permissions: [permission],
+        permissions: [permission.id],
     };
-    const role = await Role.create(roleObj);
+
+    return await Role.create(roleObj);
+};
+
+const addUser = async (): Promise<UserDoc> => {
+    const role = await addRole();
 
     const userObj = {
-        id: 'user123',
-        username: 'test@test.com',
-        roles: [role],
+        id: 'test',
+        roles: [role.id],
     };
-    await User.create(userObj);
+
+    return await User.create(userObj);
+};
+
+it('should return a 200 and array of users', async () => {
+    await addUser();
+
+    const getAllEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        { method: 'GET', resource: '/v0/users' },
+    );
 
     const result = await handler(getAllEvent);
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body)[0]).toMatchObject({
-        id: userObj.id,
-        username: userObj.username,
-        roles: [
-            {
-                id: roleObj.id,
-                name: roleObj.name,
-                permissions: [
-                    {
-                        id: permissionObj.id,
-                        name: permissionObj.name,
-                        module: moduleObj,
-                        operation: operationObj,
-                    },
-                ],
-            },
-        ],
-    });
+    expect(JSON.parse(result.body)).toBeInstanceOf(Array);
+    expect(JSON.parse(result.body).length).toBeGreaterThan(0);
 });
 
 it('returns 200 and adds a new user on proper POST call', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
-
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    const permission = await Permission.create(permissionObj);
-
-    const roleObj = {
-        id: 'rol123',
-        name: 'Test role username',
-        permissions: [permission],
-    };
-    const role = await Role.create(roleObj);
+    const role = await addRole();
 
     const payload = {
         id: 'user123',
         username: 'Test user username',
-        roles: [{ id: role.id }],
+        roles: [role.id],
     };
 
-    const postRoleEvent = constructAPIGwEvent(payload, {
+    const postRoleEvent = constructAuthenticatedAPIGwEvent(payload, {
         method: 'POST',
         resource: '/v0/users',
     });
@@ -100,7 +81,7 @@ it('returns 200 and adds a new user on proper POST call', async () => {
 });
 
 it('throws an error if calling POST without proper data', async () => {
-    const event = constructAPIGwEvent(
+    const event = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'POST',
@@ -113,69 +94,27 @@ it('throws an error if calling POST without proper data', async () => {
 });
 
 it('should return a 200 and a user on GET with id', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
+    const user = await addUser();
 
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    const permission = await Permission.create(permissionObj);
-
-    const roleObj = {
-        id: 'rol123',
-        name: 'Test role username',
-        permissions: [permission],
-    };
-    const role = await Role.create(roleObj);
-
-    const userObj = {
-        id: 'user123',
-        username: 'test@test.com',
-        roles: [role],
-    };
-    await User.create(userObj);
-    const result = await User.get(userObj.id);
-    expect(result).toBeDefined();
-
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
             resource: '/v0/users/{id}',
-            pathParameters: { id: userObj.id },
+            pathParameters: { id: user.id },
         },
     );
-    const result2 = await handler(getEvent);
+    const result = await handler(getEvent);
 
-    expect(result2.statusCode).toEqual(200);
-    expect(JSON.parse(result2.body)).toMatchObject({
-        id: userObj.id,
-        username: userObj.username,
-        roles: [
-            {
-                id: roleObj.id,
-                name: roleObj.name,
-                permissions: [
-                    {
-                        id: permissionObj.id,
-                        name: permissionObj.name,
-                        module: moduleObj,
-                        operation: operationObj,
-                    },
-                ],
-            },
-        ],
+    expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body)).toMatchObject({
+        id: user.id,
+        roles: user.roles,
     });
 });
 
 it('throws a 422 error if the id provided to retrieve a user is not found', async () => {
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
@@ -188,7 +127,7 @@ it('throws a 422 error if the id provided to retrieve a user is not found', asyn
 });
 
 it('throws an error if we do not provide a user id on get', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
@@ -200,53 +139,28 @@ it('throws an error if we do not provide a user id on get', async () => {
 });
 
 it('deletes a user when calling endpoint with id and DELETE method', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
+    const user = await addUser();
 
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    const permission = await Permission.create(permissionObj);
-
-    const roleObj = {
-        id: 'rol123',
-        name: 'Test role username',
-        permissions: [permission],
-    };
-    const role = await Role.create(roleObj);
-
-    const userObj = {
-        id: 'user123',
-        username: 'test@test.com',
-        roles: [role],
-    };
-    await User.create(userObj);
-    const result = await User.get(userObj.id);
+    const result = await User.get(user.id);
     expect(result).toBeDefined();
 
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
             resource: '/v0/users/{id}',
-            pathParameters: { id: userObj.id },
+            pathParameters: { id: user.id },
         },
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    const result2 = await User.get(userObj.id);
+    const result2 = await User.get(user.id);
     expect(result2).toBeUndefined();
 });
 
 it('throws an error if we do not provide an user id on delete', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -258,7 +172,7 @@ it('throws an error if we do not provide an user id on delete', async () => {
 });
 
 it('throws a 422 error if the id provided to delete a user is not found', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',

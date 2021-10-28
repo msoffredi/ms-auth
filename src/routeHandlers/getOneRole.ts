@@ -3,8 +3,9 @@ import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { Role, RoleDoc } from '../models/role';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const getOneRoleHandler = async (
+export const getOneRoleHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<RoleDoc> => {
     if (!event.pathParameters || !event.pathParameters.id) {
@@ -24,7 +25,5 @@ export const getOneRoleHandler = async (
         throw new DatabaseError(`Could not retrieve role with id: ${id}`);
     }
 
-    return new Role(
-        await role.serialize(Serializers.PopulateAndRemoveTimestamps),
-    );
+    return new Role(await role.serialize(Serializers.RemoveTimestamps));
 };

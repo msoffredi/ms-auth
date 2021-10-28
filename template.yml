@@ -211,7 +211,7 @@ Resources:
             GenerateSecret: false
             # You can edit this in the future to match your desired callback URL
             CallbackURLs:
-                - https://test.com
+                - https://soffredi.org
             AllowedOAuthFlowsUserPoolClient: true
             AllowedOAuthFlows:
                 - code
