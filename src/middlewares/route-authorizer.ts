@@ -17,6 +17,7 @@ export const routeAuthorizer = async (
     event: APIGatewayProxyEvent,
     routeHandler: RouteHandler,
     validPermissions: AuthPermission[] = [],
+    allowOwnRead = false,
 ): Promise<ResponseBody> => {
     if (!event.headers.Authorization) {
         throw new UnauthorizedError();
@@ -25,6 +26,7 @@ export const routeAuthorizer = async (
     try {
         const [, token] = event.headers.Authorization.split(' ');
 
+        // Cognito token payload example
         // {
         //     at_hash: 'HabHtPvngfWyNShbQi1Kfg',
         //     sub: 'c31e153a-6691-4106-b6d5-609b48f5a13e',
@@ -86,9 +88,16 @@ export const routeAuthorizer = async (
             }
 
             if (!authorized) {
-                throw new Error(
-                    'Authenticated user has insufficient permissions',
-                );
+                if (
+                    !allowOwnRead ||
+                    !event.pathParameters ||
+                    !event.pathParameters.id ||
+                    event.pathParameters.id !== user.id
+                ) {
+                    throw new Error(
+                        'Authenticated user has insufficient permissions',
+                    );
+                }
             }
         }
     } catch (err) {

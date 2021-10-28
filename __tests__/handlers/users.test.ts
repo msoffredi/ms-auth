@@ -7,6 +7,8 @@ import { User, UserDoc } from '../../src/models/user';
 import {
     addUserWithPermissions,
     constructAuthenticatedAPIGwEvent,
+    readUsersPermissionId,
+    testUserEmail,
 } from '../utils/helpers';
 
 beforeEach(async () => {
@@ -182,4 +184,30 @@ it('throws a 422 error if the id provided to delete a user is not found', async 
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
+});
+
+it('should return a 200 and a user on GET with id equal to the logged in user and without reading permissions', async () => {
+    const user = await User.get(testUserEmail);
+    const role = await Role.get(user.roles[0]);
+    role.permissions = role.permissions.filter((perm) => {
+        if (perm === readUsersPermissionId) {
+            return false;
+        }
+
+        return true;
+    });
+    await role.save();
+
+    const getEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        {
+            method: 'GET',
+            resource: '/v0/users/{id}',
+            pathParameters: { id: testUserEmail },
+        },
+    );
+    const result = await handler(getEvent);
+
+    expect(result.statusCode).toEqual(200);
+    expect(JSON.parse(result.body).id).toEqual(testUserEmail);
 });
