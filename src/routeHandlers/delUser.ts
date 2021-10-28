@@ -3,8 +3,9 @@ import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { User } from '../models/user';
+import { RouteHandler } from './types';
 
-export const delUserHandler = async (
+export const delUserHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<DeleteRecordResponseBody> => {
     if (!event.pathParameters || !event.pathParameters.id) {

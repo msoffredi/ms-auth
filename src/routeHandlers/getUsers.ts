@@ -1,24 +1,14 @@
-import { ObjectType } from 'dynamoose/dist/General';
 import { User, UserDoc } from '../models/user';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const getUsersHandler = async (): Promise<ObjectType[]> => {
+export const getUsersHandler: RouteHandler = async (): Promise<UserDoc[]> => {
     const users = await User.scan().all().exec();
 
-    const promises = User.serializeMany(
+    const serializedUsers = User.serializeMany(
         users,
-        Serializers.PopulateAndRemoveTimestamps,
+        Serializers.RemoveTimestamps,
     );
 
-    // This code below is to resolve the fact dynamoose Model.serializeMany()
-    // does not resolve promises in the Document.serialize()
-    const formattedUsers: UserDoc[] = [];
-    if (promises instanceof Array) {
-        for (const promise of promises) {
-            const obj = new User(await promise);
-            formattedUsers.push(obj);
-        }
-    }
-
-    return formattedUsers;
+    return serializedUsers;
 };

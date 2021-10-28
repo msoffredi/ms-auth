@@ -4,10 +4,9 @@ import jwt from 'jsonwebtoken';
 import { ResponseBody } from '../handlers/types';
 import { UnauthorizedError } from '../errors/unauthorized-error';
 import { User } from '../models/user';
-import { PermissionDoc } from '../models/permission';
+import { Permission } from '../models/permission';
 import { RouteHandler } from '../routeHandlers/types';
-import { Serializers } from '../models/_common';
-import { RoleDoc } from '../models/role';
+import { Role } from '../models/role';
 
 export interface AuthPermission {
     operationId: string;
@@ -59,24 +58,32 @@ export const routeAuthorizer = async (
 
         // Validate user's permissions
         if (validPermissions.length) {
-            const populatedUser = await user.serialize(
-                Serializers.PopulateAndRemoveTimestamps,
-            );
-
             let authorized = false;
 
-            populatedUser.roles.forEach((role: RoleDoc) => {
-                role.permissions.forEach((perm: PermissionDoc) => {
+            for (const roleId of user.roles) {
+                const role = await Role.get(roleId);
+
+                if (!role) {
+                    throw new Error('Invalid or inexistent role id');
+                }
+
+                for (const permissionId of role.permissions) {
+                    const perm = await Permission.get(permissionId);
+
+                    if (!perm) {
+                        throw new Error('Invalid or inexistent permission id');
+                    }
+
                     validPermissions.forEach((vperm) => {
                         if (
-                            vperm.moduleId === perm.module.id &&
-                            vperm.operationId === perm.operation.id
+                            vperm.moduleId === perm.moduleId &&
+                            vperm.operationId === perm.operationId
                         ) {
                             authorized = true;
                         }
                     });
-                });
-            });
+                }
+            }
 
             if (!authorized) {
                 throw new Error(
@@ -89,5 +96,5 @@ export const routeAuthorizer = async (
         throw new UnauthorizedError();
     }
 
-    return await routeHandler(event);
+    return routeHandler(event);
 };

@@ -3,8 +3,9 @@ import { randomUUID } from 'crypto';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { Module, ModuleDoc } from '../models/module';
 import { Serializers } from '../models/_common';
+import { RouteHandler } from './types';
 
-export const postModuleHandler = async (
+export const postModuleHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<ModuleDoc> => {
     if (!event.body) {

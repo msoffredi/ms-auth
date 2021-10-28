@@ -43,11 +43,6 @@ export const handler = async (
     // All log statements are written to CloudWatch
     console.debug('Received event:', event);
 
-    // if (event.headers.Authorization) {
-    //     const [, token] = event.headers.Authorization.split(' ');
-    //     console.debug('Decoded token:', jwt.decode(token));
-    // }
-
     const auth = Config.Authorization;
     let status = 200;
     let body: ResponseBody = null;
@@ -57,10 +52,14 @@ export const handler = async (
             case '/v0/users/{id}':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getOneUserHandler(event);
+                        body = await routeAuthorizer(event, getOneUserHandler, [
+                            auth.Users.ReadUsers,
+                        ]);
                         break;
                     case 'DELETE':
-                        body = await delUserHandler(event);
+                        body = await routeAuthorizer(event, delUserHandler, [
+                            auth.Users.DeleteUser,
+                        ]);
                         break;
                     default:
                         throw new BadMethodError();
@@ -70,10 +69,14 @@ export const handler = async (
             case '/v0/users':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getUsersHandler();
+                        body = await routeAuthorizer(event, getUsersHandler, [
+                            auth.Users.ReadUsers,
+                        ]);
                         break;
                     case 'POST':
-                        body = await postUserHandler(event);
+                        body = await routeAuthorizer(event, postUserHandler, [
+                            auth.Users.AddUser,
+                        ]);
                         break;
                     default:
                         throw new BadMethodError();
@@ -104,10 +107,14 @@ export const handler = async (
             case '/v0/roles':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getRolesHandler();
+                        body = await routeAuthorizer(event, getRolesHandler, [
+                            auth.Roles.ReadRoles,
+                        ]);
                         break;
                     case 'POST':
-                        body = await postRoleHandler(event);
+                        body = await routeAuthorizer(event, postRoleHandler, [
+                            auth.Roles.AddRole,
+                        ]);
                         break;
                     default:
                         throw new BadMethodError();
@@ -117,10 +124,14 @@ export const handler = async (
             case '/v0/roles/{id}':
                 switch (event.httpMethod) {
                     case 'GET':
-                        body = await getOneRoleHandler(event);
+                        body = await routeAuthorizer(event, getOneRoleHandler, [
+                            auth.Roles.ReadRoles,
+                        ]);
                         break;
                     case 'DELETE':
-                        body = await delRoleHandler(event);
+                        body = await routeAuthorizer(event, delRoleHandler, [
+                            auth.Roles.DeleteRole,
+                        ]);
                         break;
                     default:
                         throw new BadMethodError();

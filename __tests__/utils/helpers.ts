@@ -82,61 +82,105 @@ export const addUserWithPermissions = async () => {
         id: AuthorizationModules.Permissions,
         name: 'Authorization Permissions',
     });
+    const authorizationRole = await Module.create({
+        id: AuthorizationModules.Roles,
+        name: 'Authorization Roles',
+    });
+    const authorizationUser = await Module.create({
+        id: AuthorizationModules.Users,
+        name: 'Authorization Users',
+    });
 
     // Add Permissions
     const readModulesPermission = await Permission.create({
         id: 'authorization-api-read-modules',
         name: 'Authorization API Read Modules',
-        module: authorizationModule,
-        operation: readOperation,
+        moduleId: authorizationModule.id,
+        operationId: readOperation.id,
     });
     const addModulePermission = await Permission.create({
         id: 'authorization-api-add-module',
         name: 'Authorization API Add Module',
-        module: authorizationModule,
-        operation: addOperation,
+        moduleId: authorizationModule.id,
+        operationId: addOperation.id,
     });
     const deleteModulePermission = await Permission.create({
         id: 'authorization-api-delete-module',
         name: 'Authorization API Delete Module',
-        module: authorizationModule,
-        operation: deleteOperation,
+        moduleId: authorizationModule.id,
+        operationId: deleteOperation.id,
     });
     const readOperationsPermission = await Permission.create({
         id: 'authorization-api-read-operations',
         name: 'Authorization API Read Operations',
-        module: authorizationOperation,
-        operation: readOperation,
+        moduleId: authorizationOperation.id,
+        operationId: readOperation.id,
     });
     const addOperationPermission = await Permission.create({
         id: 'authorization-api-add-operation',
         name: 'Authorization API Add Operation',
-        module: authorizationOperation,
-        operation: addOperation,
+        moduleId: authorizationOperation.id,
+        operationId: addOperation.id,
     });
     const deleteOperationPermission = await Permission.create({
         id: 'authorization-api-delete-operation',
         name: 'Authorization API Delete Operation',
-        module: authorizationOperation,
-        operation: deleteOperation,
+        moduleId: authorizationOperation.id,
+        operationId: deleteOperation.id,
     });
     const readPermissionsPermission = await Permission.create({
         id: 'authorization-api-read-permissions',
         name: 'Authorization API Read Permissions',
-        module: authorizationPermission,
-        operation: readOperation,
+        moduleId: authorizationPermission.id,
+        operationId: readOperation.id,
     });
     const addPermissionPermission = await Permission.create({
         id: 'authorization-api-add-permission',
         name: 'Authorization API Add Permission',
-        module: authorizationPermission,
-        operation: addOperation,
+        moduleId: authorizationPermission.id,
+        operationId: addOperation.id,
     });
     const deletePermissionPermission = await Permission.create({
         id: 'authorization-api-delete-permission',
         name: 'Authorization API Delete Permission',
-        module: authorizationPermission,
-        operation: deleteOperation,
+        moduleId: authorizationPermission.id,
+        operationId: deleteOperation.id,
+    });
+    const readRolesPermission = await Permission.create({
+        id: 'authorization-api-read-roles',
+        name: 'Authorization API Read Roles',
+        moduleId: authorizationRole.id,
+        operationId: readOperation.id,
+    });
+    const addRolePermission = await Permission.create({
+        id: 'authorization-api-add-role',
+        name: 'Authorization API Add Role',
+        moduleId: authorizationRole.id,
+        operationId: addOperation.id,
+    });
+    const deleteRolePermission = await Permission.create({
+        id: 'authorization-api-delete-role',
+        name: 'Authorization API Delete Role',
+        moduleId: authorizationRole.id,
+        operationId: deleteOperation.id,
+    });
+    const readUsersPermission = await Permission.create({
+        id: 'authorization-api-read-users',
+        name: 'Authorization API Read Users',
+        moduleId: authorizationUser.id,
+        operationId: readOperation.id,
+    });
+    const addUserPermission = await Permission.create({
+        id: 'authorization-api-add-user',
+        name: 'Authorization API Add User',
+        moduleId: authorizationUser.id,
+        operationId: addOperation.id,
+    });
+    const deleteUserPermission = await Permission.create({
+        id: 'authorization-api-delete-user',
+        name: 'Authorization API Delete User',
+        moduleId: authorizationUser.id,
+        operationId: deleteOperation.id,
     });
 
     // Add Roles
@@ -144,21 +188,27 @@ export const addUserWithPermissions = async () => {
         id: 'auth-user-test-role',
         name: 'Authorized User Test Role',
         permissions: [
-            readModulesPermission,
-            addModulePermission,
-            deleteModulePermission,
-            readOperationsPermission,
-            addOperationPermission,
-            deleteOperationPermission,
-            readPermissionsPermission,
-            addPermissionPermission,
-            deletePermissionPermission,
+            readModulesPermission.id,
+            addModulePermission.id,
+            deleteModulePermission.id,
+            readOperationsPermission.id,
+            addOperationPermission.id,
+            deleteOperationPermission.id,
+            readPermissionsPermission.id,
+            addPermissionPermission.id,
+            deletePermissionPermission.id,
+            readRolesPermission.id,
+            addRolePermission.id,
+            deleteRolePermission.id,
+            readUsersPermission.id,
+            addUserPermission.id,
+            deleteUserPermission.id,
         ],
     });
 
     // Add authorized user
     await User.create({
         id: testUserEmail,
-        roles: [role],
+        roles: [role.id],
     });
 };

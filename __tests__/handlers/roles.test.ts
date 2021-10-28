@@ -1,85 +1,77 @@
 import { handler } from '../../src/handlers/auth';
 import { Module } from '../../src/models/module';
 import { Operation } from '../../src/models/operation';
-import { Permission } from '../../src/models/permission';
-import { Role } from '../../src/models/role';
-import { constructAPIGwEvent } from '../utils/helpers';
+import { Permission, PermissionDoc } from '../../src/models/permission';
+import { Role, RoleDoc } from '../../src/models/role';
+import {
+    addUserWithPermissions,
+    constructAuthenticatedAPIGwEvent,
+} from '../utils/helpers';
 
-const getAllEvent = constructAPIGwEvent(
-    {},
-    { method: 'GET', resource: '/v0/roles' },
-);
+beforeEach(async () => {
+    await addUserWithPermissions();
+});
 
-it('should return a 200 and array of roles', async () => {
+const addPermission = async (): Promise<PermissionDoc> => {
     const operationObj = { id: 'op123', name: 'Test operation name' };
     const operation = await Operation.create(operationObj);
 
     const moduleObj = { id: 'mod123', name: 'Test module name' };
     const module = await Module.create(moduleObj);
 
-    const permissionObj = {
+    const permission = {
         id: 'per123',
         name: 'Test permission name',
-        module,
-        operation,
+        moduleId: module.id,
+        operationId: operation.id,
     };
-    const permission = await Permission.create(permissionObj);
+    return await Permission.create(permission);
+};
+
+const addRole = async (): Promise<RoleDoc> => {
+    const permission = await addPermission();
 
     const roleObj = {
         id: 'rol123',
         name: 'Test role username',
-        permissions: [permission],
+        permissions: [permission.id],
     };
-    await Role.create(roleObj);
 
+    return await Role.create(roleObj);
+};
+
+it('should return a 200 and array of roles', async () => {
+    await addRole();
+
+    const getAllEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        { method: 'GET', resource: '/v0/roles' },
+    );
     const result = await handler(getAllEvent);
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body)[0]).toMatchObject({
-        id: roleObj.id,
-        name: roleObj.name,
-        permissions: [
-            {
-                id: permissionObj.id,
-                name: permissionObj.name,
-                module: moduleObj,
-                operation: operationObj,
-            },
-        ],
-    });
+    expect(JSON.parse(result.body).length).toBeGreaterThan(0);
 });
 
 it('returns 200 and adds a new role on proper POST call', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
-
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    await Permission.create(permissionObj);
+    const permission = await addPermission();
 
     const payload = {
         id: 'rol123',
         name: 'Test role name',
-        permissions: [{ id: 'per123' }],
+        permissions: [permission.id],
     };
 
-    const postRoleEvent = constructAPIGwEvent(payload, {
+    const postRoleEvent = constructAuthenticatedAPIGwEvent(payload, {
         method: 'POST',
         resource: '/v0/roles',
     });
     const result = await handler(postRoleEvent);
     expect(result.statusCode).toEqual(200);
-    expect(JSON.parse(result.body).id).toEqual(payload.id);
+    expect(JSON.parse(result.body)).toEqual(payload);
 });
 
 it('throws an error if calling POST without proper data', async () => {
-    const event = constructAPIGwEvent(
+    const event = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'POST',
@@ -92,46 +84,27 @@ it('throws an error if calling POST without proper data', async () => {
 });
 
 it('deletes a role when calling endpoint with id and DELETE method', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
-
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    const permission = await Permission.create(permissionObj);
-
-    const roleObj = {
-        id: 'rol123',
-        name: 'Test role username',
-        permissions: [permission],
-    };
-    await Role.create(roleObj);
-    const result = await Role.get(roleObj.id);
+    const role = await addRole();
+    const result = await Role.get(role.id);
     expect(result).toBeDefined();
 
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
             resource: '/v0/roles/{id}',
-            pathParameters: { id: roleObj.id },
+            pathParameters: { id: role.id },
         },
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(200);
 
-    const result2 = await Role.get(roleObj.id);
+    const result2 = await Role.get(role.id);
     expect(result2).toBeUndefined();
 });
 
 it('throws an error if we do not provide an role id on delete', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -143,7 +116,7 @@ it('throws an error if we do not provide an role id on delete', async () => {
 });
 
 it('throws a 422 error if the id provided to delete a role is not found', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
@@ -156,56 +129,31 @@ it('throws a 422 error if the id provided to delete a role is not found', async 
 });
 
 it('should return a 200 and a role on GET with id', async () => {
-    const operationObj = { id: 'op123', name: 'Test operation name' };
-    const operation = await Operation.create(operationObj);
+    const role = await addRole();
 
-    const moduleObj = { id: 'mod123', name: 'Test module name' };
-    const module = await Module.create(moduleObj);
-
-    const permissionObj = {
-        id: 'per123',
-        name: 'Test permission name',
-        module,
-        operation,
-    };
-    const permission = await Permission.create(permissionObj);
-
-    const roleObj = {
-        id: 'rol123',
-        name: 'Test role username',
-        permissions: [permission],
-    };
-    await Role.create(roleObj);
-    const result = await Role.get(roleObj.id);
+    const result = await Role.get(role.id);
     expect(result).toBeDefined();
 
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
             resource: '/v0/roles/{id}',
-            pathParameters: { id: roleObj.id },
+            pathParameters: { id: role.id },
         },
     );
     const result2 = await handler(getEvent);
 
     expect(result2.statusCode).toEqual(200);
     expect(JSON.parse(result2.body)).toMatchObject({
-        id: roleObj.id,
-        name: roleObj.name,
-        permissions: [
-            {
-                id: permissionObj.id,
-                name: permissionObj.name,
-                module: moduleObj,
-                operation: operationObj,
-            },
-        ],
+        id: role.id,
+        name: role.name,
+        permissions: role.permissions,
     });
 });
 
 it('throws a 422 error if the id provided to retrieve a role is not found', async () => {
-    const getEvent = constructAPIGwEvent(
+    const getEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',
@@ -218,7 +166,7 @@ it('throws a 422 error if the id provided to retrieve a role is not found', asyn
 });
 
 it('throws an error if we do not provide a role id on get', async () => {
-    const deleteEvent = constructAPIGwEvent(
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'GET',

@@ -25,6 +25,6 @@ export const getOnePermissionHandler = async (
     }
 
     return new Permission(
-        await permission.serialize(Serializers.PopulateAndRemoveTimestamps),
+        await permission.serialize(Serializers.RemoveTimestamps),
     );
 };

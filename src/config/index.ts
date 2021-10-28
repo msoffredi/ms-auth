@@ -48,5 +48,33 @@ export const Config: ConfigType = {
                 operationId: AuthorizationOperations.Add,
             },
         },
+        Roles: {
+            ReadRoles: {
+                moduleId: AuthorizationModules.Roles,
+                operationId: AuthorizationOperations.Read,
+            },
+            DeleteRole: {
+                moduleId: AuthorizationModules.Roles,
+                operationId: AuthorizationOperations.Delete,
+            },
+            AddRole: {
+                moduleId: AuthorizationModules.Roles,
+                operationId: AuthorizationOperations.Add,
+            },
+        },
+        Users: {
+            ReadUsers: {
+                moduleId: AuthorizationModules.Users,
+                operationId: AuthorizationOperations.Read,
+            },
+            DeleteUser: {
+                moduleId: AuthorizationModules.Users,
+                operationId: AuthorizationOperations.Delete,
+            },
+            AddUser: {
+                moduleId: AuthorizationModules.Users,
+                operationId: AuthorizationOperations.Add,
+            },
+        },
     },
 };
