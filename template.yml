@@ -326,7 +326,7 @@ Resources:
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            EventBusName: !GetAtt EventBus.Name
+            EventBusName: 'ms-auth'
             Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
