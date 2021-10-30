@@ -1,10 +1,26 @@
+import { AuthEventDetailTypes } from '../events/types';
 import {
     AuthorizationModules,
     AuthorizationOperations,
     ConfigType,
+    EventBusTypes,
 } from './types';
 
 export const Config: ConfigType = {
+    events: {
+        eventBusType: EventBusTypes.AWSEventBridge,
+        busName: 'default',
+        inputEvents: {
+            eventTypeLocation: 'detail.type',
+            eventDataLocation: 'detail.data',
+            events: {
+                userDeleted: {
+                    eventType: AuthEventDetailTypes.UserDeleted,
+                    userIdLocation: 'detail.data.userId',
+                },
+            },
+        },
+    },
     Authorization: {
         Modules: {
             ReadModules: {

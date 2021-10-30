@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, EventBridgeEvent } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import {
     AuthorizationModules,
@@ -9,6 +9,7 @@ import { Operation } from '../../src/models/operation';
 import { Permission } from '../../src/models/permission';
 import { Role } from '../../src/models/role';
 import { User } from '../../src/models/user';
+import { AuthEventsDetailTypes, AuthEventDetail } from '../../src/events/types';
 
 export const testUserEmail = 'test@test.com';
 export const readUsersPermissionId = 'authorization-api-read-users';
@@ -54,6 +55,30 @@ export const constructAuthenticatedAPIGwEvent = (
     };
 
     return event;
+};
+
+/**
+ * detail format: { type: 'user.deleted', userId: 'test@test.com' }
+ *
+ * @param detailType
+ * @param detail
+ * @returns
+ */
+export const constructEventBridgeEvent = (
+    detailType: AuthEventsDetailTypes,
+    detail: AuthEventDetail,
+): EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail> => {
+    return {
+        version: '0',
+        id: '123456',
+        'detail-type': detailType,
+        source: 'test.users',
+        account: '123456789',
+        time: new Date().toISOString(),
+        region: 'us-east-1',
+        resources: [],
+        detail: detail,
+    };
 };
 
 export const addUserWithPermissions = async () => {

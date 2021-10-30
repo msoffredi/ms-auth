@@ -4,10 +4,10 @@
     "description": "RBAC authorization serverless microservice",
     "private": true,
     "dependencies": {
-        "@types/jsonwebtoken": "^8.5.5",
         "aws-sdk": "^2.1007.0",
         "dynamoose": "^2.8.2",
         "jsonwebtoken": "^8.5.1",
+        "lodash": "^4.17.21",
         "source-map-support": "^0.5.19"
     },
     "devDependencies": {
@@ -16,6 +16,8 @@
         "@tsconfig/node14": "^1.0.0",
         "@types/aws-lambda": "^8.10.72",
         "@types/jest": "^27.0.2",
+        "@types/jsonwebtoken": "^8.5.5",
+        "@types/lodash": "^4.14.176",
         "@types/node": "^16.10.9",
         "@typescript-eslint/eslint-plugin": "^5.0.0",
         "@typescript-eslint/parser": "^5.0.0",

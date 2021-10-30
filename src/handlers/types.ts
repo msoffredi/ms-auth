@@ -1,4 +1,14 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
+import {
+    APIGatewayEventDefaultAuthorizerContext,
+    APIGatewayEventRequestContextWithAuthorizer,
+    APIGatewayProxyEvent,
+    APIGatewayProxyEventHeaders,
+    APIGatewayProxyEventMultiValueHeaders,
+    APIGatewayProxyEventMultiValueQueryStringParameters,
+    APIGatewayProxyEventPathParameters,
+    APIGatewayProxyEventQueryStringParameters,
+    APIGatewayProxyEventStageVariables,
+} from 'aws-lambda';
 import { Document } from 'dynamoose/dist/Document';
 import { ObjectType } from 'dynamoose/dist/General';
 import { ErrorEntry } from '../errors/types';
@@ -32,3 +42,33 @@ export type ResponseBody =
     | DeleteRecordResponseBody
     | ErrorEntry[]
     | null;
+
+export interface HandlerResponse {
+    status: number;
+    body: ResponseBody;
+}
+
+export interface MsAuthEvents<TDetailType, TDetail> {
+    // APIGatewayProxyEvent
+    resource?: string;
+    httpMethod?: string;
+    body?: string | null;
+    headers?: APIGatewayProxyEventHeaders;
+    multiValueHeaders?: APIGatewayProxyEventMultiValueHeaders;
+    isBase64Encoded?: boolean;
+    path?: string;
+    pathParameters?: APIGatewayProxyEventPathParameters | null;
+    queryStringParameters?: APIGatewayProxyEventQueryStringParameters | null;
+    multiValueQueryStringParameters?: APIGatewayProxyEventMultiValueQueryStringParameters | null;
+    stageVariables?: APIGatewayProxyEventStageVariables | null;
+    requestContext?: APIGatewayEventRequestContextWithAuthorizer<APIGatewayEventDefaultAuthorizerContext>;
+
+    // EventBridgeEvent
+    id?: string;
+    version?: string;
+    time?: string;
+    resources?: string[];
+    source?: string;
+    'detail-type'?: TDetailType;
+    detail?: TDetail;
+}

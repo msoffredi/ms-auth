@@ -1,6 +1,24 @@
 import { AuthPermission } from '../middlewares/route-authorizer';
 
+export enum EventBusTypes {
+    AWSEventBridge = 'aws-event-bridge',
+}
+
 export interface ConfigType {
+    events: {
+        eventBusType: EventBusTypes;
+        busName: string;
+        inputEvents: {
+            eventTypeLocation: string;
+            eventDataLocation: string;
+            events: {
+                userDeleted: {
+                    eventType: string;
+                    userIdLocation: string;
+                };
+            };
+        };
+    };
     Authorization: {
         Modules: {
             ReadModules: AuthPermission;
