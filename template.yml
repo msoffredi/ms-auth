@@ -298,6 +298,43 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
+    # Testing Lambda function to create a delete user event using EventBridge
+    createDeleteUserEventForTestingFunction:
+        Type: AWS::Serverless::Function
+        Properties:
+            CodeUri: __tests__/events/publish-eventbridge-delete-user-event/
+            Handler: app.lambdaHandler
+            Runtime: nodejs12.x
+            Policies:
+                - Statement:
+                      - Effect: Allow
+                        Resource: '*'
+                        Action:
+                            - events:PutEvents
+
+    # Test EventBridge rule will take test.users source events with pattern:
+    # {
+    #   type: 'user.deleted'
+    # }
+    # ... and send it to
+    EventRule:
+        Type: AWS::Events::Rule
+        Properties:
+            Description: 'EventRule'
+            EventPattern:
+                source:
+                    - 'test.users'
+                detail:
+                    type:
+                        - 'user.deleted'
+            State: 'ENABLED'
+            Targets:
+                - Arn:
+                      Fn::GetAtt:
+                          - 'MsAuthAPIFunction'
+                          - 'Arn'
+                  Id: 'MsAuth'
+
 Outputs:
     MsAuthAPIProd:
         Description: 'API Gateway endpoint URL for Prod environment'
