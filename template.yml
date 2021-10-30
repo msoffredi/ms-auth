@@ -72,6 +72,11 @@ Resources:
                       TableName: !Ref DynamoDBRolesTable
                 - DynamoDBCrudPolicy:
                       TableName: !Ref DynamoDBUsersTable
+                - Statement:
+                      - Effect: Allow
+                        Resource: '*'
+                        Action:
+                            - events:PutEvents
             Events:
                 Healthcheck:
                     Type: Api
@@ -312,15 +317,16 @@ Resources:
                         Action:
                             - events:PutEvents
 
-    # Test EventBridge rule will take test.users source events with pattern:
-    # {
-    #   type: 'user.deleted'
-    # }
-    # ... and send it to
-    EventRule:
+    EventBus:
+        Type: AWS::Events::EventBus
+        Properties:
+            Name: 'ms-auth'
+
+    AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            Description: 'EventRule'
+            EventBusName: !GetAtt EventBus.Arn
+            Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
                     - 'test.users'
@@ -329,10 +335,7 @@ Resources:
                         - 'user.deleted'
             State: 'ENABLED'
             Targets:
-                - Arn:
-                      Fn::GetAtt:
-                          - 'MsAuthAPIFunction'
-                          - 'Arn'
+                - Arn: !GetAtt MsAuthAPIFunction.Arn
                   Id: 'MsAuth'
 
     # Test EventBridge permission
@@ -343,10 +346,7 @@ Resources:
                 Ref: 'MsAuthAPIFunction'
             Action: 'lambda:InvokeFunction'
             Principal: 'events.amazonaws.com'
-            SourceArn:
-                Fn::GetAtt:
-                    - 'EventRule'
-                    - 'Arn'
+            SourceArn: !GetAtt AuthInputUserDeletedEventRule.Arn
 
 Outputs:
     MsAuthAPIProd:

@@ -4,13 +4,15 @@ const AWS = require('aws-sdk');
 AWS.config.update({ region: process.env.AWS_REGION });
 const eventbridge = new AWS.EventBridge();
 
-exports.lambdaHandler = async (event, context) => {
+exports.lambdaHandler = async () => {
     const params = {
         Entries: [
             {
                 Detail: JSON.stringify({
                     type: 'user.deleted',
-                    userId: 'test@test.com',
+                    data: {
+                        userId: 'test@test.com',
+                    },
                 }),
                 DetailType: 'User Deleted',
                 Source: 'test.users',
