@@ -9,7 +9,8 @@ import {
 export const Config: ConfigType = {
     events: {
         eventBusType: EventBusTypes.AWSEventBridge,
-        busName: 'default',
+        busName: 'ms-auth',
+        outputSource: 'authorization-service',
         inputEvents: {
             eventTypeLocation: 'detail.type',
             eventDataLocation: 'detail.data',
