@@ -303,6 +303,11 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
+    EventBus:
+        Type: AWS::Events::EventBus
+        Properties:
+            Name: 'ms-auth'
+
     # Testing Lambda function to create a delete user event using EventBridge
     createDeleteUserEventForTestingFunction:
         Type: AWS::Serverless::Function
@@ -317,15 +322,11 @@ Resources:
                         Action:
                             - events:PutEvents
 
-    EventBus:
-        Type: AWS::Events::EventBus
-        Properties:
-            Name: 'ms-auth'
-
+    # Test eventbridge rule for user.deleted test events from above test lambda
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            EventBusName: !GetAtt EventBus.Arn
+            EventBusName: !GetAtt EventBus.Name
             Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
@@ -336,7 +337,7 @@ Resources:
             State: 'ENABLED'
             Targets:
                 - Arn: !GetAtt MsAuthAPIFunction.Arn
-                  Id: 'MsAuth'
+                  Id: 'authorization.input.user.deleted'
 
     # Test EventBridge permission
     PermissionForEventsToInvokeLambda:
