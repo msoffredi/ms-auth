@@ -335,6 +335,19 @@ Resources:
                           - 'Arn'
                   Id: 'MsAuth'
 
+    # Test EventBridge permission
+    PermissionForEventsToInvokeLambda:
+        Type: AWS::Lambda::Permission
+        Properties:
+            FunctionName:
+                Ref: 'MsAuthAPIFunction'
+            Action: 'lambda:InvokeFunction'
+            Principal: 'events.amazonaws.com'
+            SourceArn:
+                Fn::GetAtt:
+                    - 'EventRule'
+                    - 'Arn'
+
 Outputs:
     MsAuthAPIProd:
         Description: 'API Gateway endpoint URL for Prod environment'
