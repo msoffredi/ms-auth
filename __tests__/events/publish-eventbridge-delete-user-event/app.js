@@ -1,5 +1,7 @@
-import AWS from 'aws-sdk';
-import { testUserEmail } from '../../utils/helpers';
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const AWS = require('aws-sdk');
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { testUserEmail } = require('../../utils/helpers');
 
 AWS.config.update({ region: process.env.AWS_REGION });
 const eventbridge = new AWS.EventBridge();
