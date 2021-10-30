@@ -336,7 +336,10 @@ Resources:
                         - 'user.deleted'
             State: 'ENABLED'
             Targets:
-                - Arn: !GetAtt MsAuthAPIFunction.Arn
+                - Arn:
+                      Fn::GetAtt:
+                          - 'MsAuthAPIFunction'
+                          - 'Arn'
                   Id: 'authorization.input.user.deleted'
 
     # Test EventBridge permission
