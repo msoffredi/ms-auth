@@ -3,7 +3,6 @@
     "version": "0.1.0",
     "description": "Test Lambda function to publish a custom delete user event over EventBridge",
     "main": "app.js",
-    "type": "module",
     "dependencies": {
         "aws-sdk": "^2.1007.0"
     }
