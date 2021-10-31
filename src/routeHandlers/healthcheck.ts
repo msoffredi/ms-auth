@@ -12,8 +12,8 @@ export const healthcheckHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
 ): Promise<HealthcheckResponseBody> => {
     if (
-        event.pathParameters &&
-        event.pathParameters.init &&
+        event.queryStringParameters &&
+        event.queryStringParameters.init &&
         process.env.SUPER_ADMIN_EMAIL
     ) {
         const userId = process.env.SUPER_ADMIN_EMAIL;
