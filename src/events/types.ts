@@ -7,6 +7,7 @@ export enum AuthEventsDetailTypes {
 
 export enum AuthEventDetailTypes {
     UserDeleted = 'user.deleted',
+    AuthUserDeleted = 'authorization.user.deleted',
 }
 
 export interface AuthEventDetail {

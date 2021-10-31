@@ -5,13 +5,14 @@ AWS.config.update({ region: process.env.AWS_REGION });
 const eventbridge = new AWS.EventBridge();
 
 exports.lambdaHandler = async () => {
+    const userId = process.env.SUPER_ADMIN_EMAIL || 'test@test.com';
     const params = {
         Entries: [
             {
                 Detail: JSON.stringify({
                     type: 'user.deleted',
                     data: {
-                        userId: 'test@test.com',
+                        userId,
                     },
                 }),
                 DetailType: 'User Deleted',
