@@ -26,7 +26,7 @@ export enum ServiceStatus {
     Healthy = 'healthy',
 }
 
-interface HealthcheckResponseBody {
+export interface HealthcheckResponseBody {
     serviceStatus: ServiceStatus;
 }
 

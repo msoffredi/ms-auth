@@ -1,6 +1,6 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { getOperationsHandler } from '../routeHandlers/getOperations';
-import { ResponseBody, ServiceStatus, HandlerResponse } from './types';
+import { ResponseBody, HandlerResponse } from './types';
 import { postOperationHandler } from '../routeHandlers/postOperation';
 import { delOperationHandler } from '../routeHandlers/delOperation';
 import { getModulesHandler } from '../routeHandlers/getModules';
@@ -23,6 +23,7 @@ import { getOneUserHandler } from '../routeHandlers/getOneUser';
 import { delUserHandler } from '../routeHandlers/delUser';
 import { routeAuthorizer } from '../middlewares/route-authorizer';
 import { Config } from '../config';
+import { healthcheckHandler } from '../routeHandlers/healthcheck';
 
 export const apiCallsRouter = async (
     event: APIGatewayProxyEvent,
@@ -148,7 +149,7 @@ export const apiCallsRouter = async (
 
             case '/healthcheck':
                 if (event.httpMethod === 'GET') {
-                    body = { serviceStatus: ServiceStatus.Healthy };
+                    body = await healthcheckHandler(event);
                 } else {
                     throw new BadMethodError();
                 }
