@@ -33,7 +33,7 @@ it('should initialize DB with super admin and required authorization structure o
         {
             method: 'GET',
             resource: '/healthcheck',
-            pathParameters: { init: '1' },
+            query: { init: '1' },
         },
     );
     const result = await handler(event);
@@ -55,7 +55,7 @@ it('ignores initialization if super admin user exists', async () => {
         {
             method: 'GET',
             resource: '/healthcheck',
-            pathParameters: { init: '1' },
+            query: { init: '1' },
         },
     );
     const result = await handler(event);
