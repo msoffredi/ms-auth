@@ -326,7 +326,7 @@ Resources:
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            EventBusName: 'ms-auth'
+            EventBusName: !GetAtt EventBus.Arn
             Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
@@ -336,10 +336,7 @@ Resources:
                         - 'user.deleted'
             State: 'ENABLED'
             Targets:
-                - Arn:
-                      Fn::GetAtt:
-                          - 'MsAuthAPIFunction'
-                          - 'Arn'
+                - Arn: !GetAtt MsAuthAPIFunction.Arn
                   Id: 'authorization.input.user.deleted'
 
     # Test EventBridge permission

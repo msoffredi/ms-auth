@@ -10,6 +10,8 @@ import {
     readUsersPermissionId,
     testUserEmail,
 } from '../utils/helpers';
+import { publisher } from '../../src/events/event-publisher';
+import { AuthEventDetailTypes } from '../../src/events/types';
 
 beforeEach(async () => {
     await addUserWithPermissions();
@@ -159,6 +161,13 @@ it('deletes a user when calling endpoint with id and DELETE method', async () =>
 
     const result2 = await User.get(user.id);
     expect(result2).toBeUndefined();
+
+    expect(publisher).toHaveBeenCalledWith(
+        AuthEventDetailTypes.AuthUserDeleted,
+        {
+            userId: user.id,
+        },
+    );
 });
 
 it('throws an error if we do not provide an user id on delete', async () => {
