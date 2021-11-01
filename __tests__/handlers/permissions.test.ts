@@ -6,6 +6,7 @@ import { handler } from '../../src/handlers/auth';
 import { Operation } from '../../src/models/operation';
 import { Module } from '../../src/models/module';
 import { Permission, PermissionDoc } from '../../src/models/permission';
+import { Role } from '../../src/models/role';
 
 beforeEach(async () => {
     await addUserWithPermissions();
@@ -113,7 +114,7 @@ it('throws an error if we do not provide an permission id on delete', async () =
     expect(delResult.statusCode).toEqual(400);
 });
 
-it('throws a 422 error if the id provided for a delete permission is not found', async () => {
+it('throws a 404 error if the id provided for a delete permission is not found', async () => {
     const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
@@ -123,7 +124,7 @@ it('throws a 422 error if the id provided for a delete permission is not found',
         },
     );
     const delResult = await handler(deleteEvent);
-    expect(delResult.statusCode).toEqual(422);
+    expect(delResult.statusCode).toEqual(404);
 });
 
 it('should return a 200 and a permissions on GET with id', async () => {
@@ -166,4 +167,29 @@ it('throws an error if we do not provide an permission id on get', async () => {
     );
     const delResult = await handler(getOneEvent);
     expect(delResult.statusCode).toEqual(400);
+});
+
+it('does not delete a permission if it is linked to an existing role', async () => {
+    const roles = await Role.scan().exec();
+    expect(roles).toBeDefined();
+    expect(roles.length).toBeGreaterThan(0);
+    expect(roles[0].permissions.length).toBeGreaterThan(0);
+
+    const permissionId = roles[0].permissions[0];
+    const permissionBefore = await Permission.get(permissionId);
+    expect(permissionBefore).toBeDefined();
+
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/permissions/{id}',
+            pathParameters: { id: permissionId },
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(422);
+
+    const operationAfter = await Permission.get(permissionId);
+    expect(operationAfter).toBeDefined();
 });
