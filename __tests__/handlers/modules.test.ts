@@ -4,6 +4,7 @@ import {
 } from '../utils/helpers';
 import { handler } from '../../src/handlers/auth';
 import { Module } from '../../src/models/module';
+import { Permission } from '../../src/models/permission';
 
 beforeEach(async () => {
     await addUserWithPermissions();
@@ -87,7 +88,7 @@ it('throws an error if calling POST without proper data', async () => {
     expect(postResult.statusCode).toEqual(400);
 });
 
-it('throws a 422 error if the id provided for a delete module is not found', async () => {
+it('throws a 404 error if the id provided for a delete module is not found', async () => {
     const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
@@ -97,5 +98,29 @@ it('throws a 422 error if the id provided for a delete module is not found', asy
         },
     );
     const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(404);
+});
+
+it('does not delete a module if it is linked to an existing permission', async () => {
+    const permissions = await Permission.scan().exec();
+    expect(permissions).toBeDefined();
+    expect(permissions.length).toBeGreaterThan(0);
+
+    const moduleId = permissions[0].moduleId;
+    const moduleBefore = await Module.get(moduleId);
+    expect(moduleBefore).toBeDefined();
+
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/modules/{id}',
+            pathParameters: { id: moduleId },
+        },
+    );
+    const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
+
+    const moduleAfter = await Module.get(moduleId);
+    expect(moduleAfter).toBeDefined();
 });

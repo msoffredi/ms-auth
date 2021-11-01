@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { BadRequestError } from '../errors/bad-request-error';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { Module } from '../models/module';
+import { Permission } from '../models/permission';
 import { RouteHandler } from './types';
 
 export const delModuleHandler: RouteHandler = async (
@@ -22,11 +24,19 @@ export const delModuleHandler: RouteHandler = async (
     const module = await Module.get(id);
 
     if (module) {
-        // TODO: should not allow deleting if the module is in a permission
+        const permissions = await Permission.scan({
+            moduleId: id,
+        }).exec();
 
-        await Module.delete(id);
+        if (!permissions || !permissions.length) {
+            await Module.delete(id);
+        } else {
+            throw new DatabaseError(
+                `Can not delete module with id: ${id} because it has permission(s) linked to it`,
+            );
+        }
     } else {
-        throw new DatabaseError(`Could not delete module with id: ${id}`);
+        throw new BadRequestError();
     }
 
     return {

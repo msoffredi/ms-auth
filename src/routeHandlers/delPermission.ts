@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { BadRequestError } from '../errors/bad-request-error';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { Permission } from '../models/permission';
+import { Role } from '../models/role';
 import { RouteHandler } from './types';
 
 export const delPermissionHandler: RouteHandler = async (
@@ -22,11 +24,19 @@ export const delPermissionHandler: RouteHandler = async (
     const permission = await Permission.get(id);
 
     if (permission) {
-        // TODO: should not allow deleting if the permission is in a role
+        const roles = await Role.scan({
+            permissions: { contains: id },
+        }).exec();
 
-        await Permission.delete(id);
+        if (!roles || !roles.length) {
+            await Permission.delete(id);
+        } else {
+            throw new DatabaseError(
+                `Can not delete permission with id: ${id} because it has role(s) linked to it`,
+            );
+        }
     } else {
-        throw new DatabaseError(`Could not delete permission with id: ${id}`);
+        throw new BadRequestError();
     }
 
     return {

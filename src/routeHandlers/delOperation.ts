@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { BadRequestError } from '../errors/bad-request-error';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { Operation } from '../models/operation';
+import { Permission } from '../models/permission';
 import { RouteHandler } from './types';
 
 export const delOperationHandler: RouteHandler = async (
@@ -22,11 +24,19 @@ export const delOperationHandler: RouteHandler = async (
     const operation = await Operation.get(id);
 
     if (operation) {
-        // TODO: should not allow deleting if the operation is in a permission
+        const permissions = await Permission.scan({
+            operationId: id,
+        }).exec();
 
-        await Operation.delete(id);
+        if (!permissions || !permissions.length) {
+            await Operation.delete(id);
+        } else {
+            throw new DatabaseError(
+                `Can not delete operation with id: ${id} because it has permission(s) linked to it`,
+            );
+        }
     } else {
-        throw new DatabaseError(`Could not delete operation with id: ${id}`);
+        throw new BadRequestError();
     }
 
     return {

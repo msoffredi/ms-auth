@@ -3,6 +3,7 @@ import { Module } from '../../src/models/module';
 import { Operation } from '../../src/models/operation';
 import { Permission, PermissionDoc } from '../../src/models/permission';
 import { Role, RoleDoc } from '../../src/models/role';
+import { User } from '../../src/models/user';
 import {
     addUserWithPermissions,
     constructAuthenticatedAPIGwEvent,
@@ -115,7 +116,7 @@ it('throws an error if we do not provide an role id on delete', async () => {
     expect(delResult.statusCode).toEqual(400);
 });
 
-it('throws a 422 error if the id provided to delete a role is not found', async () => {
+it('throws a 404 error if the id provided to delete a role is not found', async () => {
     const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
@@ -125,7 +126,7 @@ it('throws a 422 error if the id provided to delete a role is not found', async 
         },
     );
     const delResult = await handler(deleteEvent);
-    expect(delResult.statusCode).toEqual(422);
+    expect(delResult.statusCode).toEqual(404);
 });
 
 it('should return a 200 and a role on GET with id', async () => {
@@ -175,4 +176,29 @@ it('throws an error if we do not provide a role id on get', async () => {
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(400);
+});
+
+it('does not delete a role if it is linked to an existing user', async () => {
+    const users = await User.scan().exec();
+    expect(users).toBeDefined();
+    expect(users.length).toBeGreaterThan(0);
+    expect(users[0].roles.length).toBeGreaterThan(0);
+
+    const roleId = users[0].roles[0];
+    const roleBefore = await Role.get(roleId);
+    expect(roleBefore).toBeDefined();
+
+    const deleteEvent = constructAuthenticatedAPIGwEvent(
+        {},
+        {
+            method: 'DELETE',
+            resource: '/v0/roles/{id}',
+            pathParameters: { id: roleId },
+        },
+    );
+    const delResult = await handler(deleteEvent);
+    expect(delResult.statusCode).toEqual(422);
+
+    const roleAfter = await Role.get(roleId);
+    expect(roleAfter).toBeDefined();
 });
