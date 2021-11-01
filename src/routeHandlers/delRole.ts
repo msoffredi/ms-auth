@@ -1,8 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
+import { BadRequestError } from '../errors/bad-request-error';
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
 import { DeleteRecordResponseBody } from '../handlers/types';
 import { Role } from '../models/role';
+import { User } from '../models/user';
 import { RouteHandler } from './types';
 
 export const delRoleHandler: RouteHandler = async (
@@ -22,11 +24,20 @@ export const delRoleHandler: RouteHandler = async (
     const role = await Role.get(id);
 
     if (role) {
-        // TODO: should not allow deleting if the role is assigned to a user
+        const users = await User.scan({
+            roles: { contains: id },
+        }).exec();
 
-        await Role.delete(id);
+        if (!users || !users.length) {
+            await Role.delete(id);
+        } else {
+            throw new DatabaseError(
+                `Can not delete role with id: ${id} because it has user(s) linked to it`,
+            );
+        }
     } else {
-        throw new DatabaseError(`Could not delete role with id: ${id}`);
+        // throw new DatabaseError(`Could not delete role with id: ${id}`);
+        throw new BadRequestError();
     }
 
     return {

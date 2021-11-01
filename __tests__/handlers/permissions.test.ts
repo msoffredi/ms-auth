@@ -190,6 +190,6 @@ it('does not delete a permission if it is linked to an existing role', async () 
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
 
-    const operationAfter = await Permission.get(permissionId);
-    expect(operationAfter).toBeDefined();
+    const permissionAfter = await Permission.get(permissionId);
+    expect(permissionAfter).toBeDefined();
 });
