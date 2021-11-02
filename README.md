@@ -6,6 +6,30 @@ The solution includes a SAM template that will spin up an AWS Cognito User Pool 
 
 The application is 100% setup to spin up locally for development purposes (using Docker), and also implements a code-base DynamoDB mock module for testing purposes so you don't need a local DB to run the tests.
 
+## Solution Architecture
+
+## AWS Services integrated
+
+There are multiple AWS Services integrated into this project, and some indirect ones too. Here's a full list:
+
+**Directly integrated services**
+
+-   AWS Lambda
+-   Amazon API Gateway
+-   Amazon DynamoDB
+-   Amazon CloudWatch
+
+**PoC-related directly integrated services**
+
+-   Amazon Cognito
+-   Amazon EventBridge
+
+**Indirectly integrated services**
+
+-   AWS IAM
+-   AWS CloudFormation
+-   Amazon S3
+
 ## Dependencies
 
 ### Local (dev)
@@ -26,9 +50,7 @@ For a development full instance of the entire solution in AWS (in the cloud) you
 
 ## Deployment
 
-### Local instance
-
-### AWS Dev account
+### Deploying to AWS Dev Account from local
 
 Warning: local deployment to AWS is discouraged in favor of our CI/CD configuration. This is meant for CI/CD development and/or testing purposes and required an AWS account with almost admin privileges.
 
@@ -74,9 +96,19 @@ SAM configuration environment [default]:
 
 This command above should create all the necessary resources including CloudFormation stack and S3 deployment bucket. **Some of these resources will be created with unique randomly generated names and will persist even after a full cleanup (see cleanup command below)**.
 
+By the default, if you followed the answers above, CloudFormation will save your answers and remember them for the next run in a file `samconfig.toml`. This file is ignored by default and won't be pushed into the GitHub repo (**and it shouldn't!**).
+
+### Deploying to AWS using the GitHub CI/CD
+
+A normal deployment to AWS using the project's CI/CD configuration will happen if you create and promote changes through a new branch (typically out of `main` branch), and create a Pull Request (PR) to merge your branch changes into `main`.
+
+When the PR is ready to be merged into `main` and you trigger the action GitHub will run the project's GitHub actions including a full deploy to AWS.
+
+For the above deployment to be successful, you need more configuration to be in place in your GitHub repository. That will include having the required secrets configured as stated in the next sub-section.
+
 #### Adding secrets to your GitHub repository
 
-In order for the GitHub action to work you need to add some secrets to your GitHub repository. These are the secrets and what to include in them:
+In order for the AWS deployment GitHub action to work you need to add some secrets to your GitHub repository. These are the secrets and what to include in them:
 
 -   `AWS_REGION` = Your prefered region, e.g. us-east-1
 -   `AWS_ACCESS_KEY_ID` = A valid AWS account user access key (must have enough privileges to deploy the stack)
@@ -85,7 +117,9 @@ In order for the GitHub action to work you need to add some secrets to your GitH
 -   `DEPLOY_S3_BUCKET` = An S3 bucket name to use for deployment purposes (this must be unique in the entire AWS)
 -   `AUTH_DOMAIN_NAME` = Prefix for AWS Cognito to use for its UI (this must be unique in the entire AWS)
 
-## Removing everything from AWS at once
+I recommend you take note of all of these configurations in a personal document or similar because you won't have access to these values in the future. The ones you want to be careful about are `AWS_ACCESS_KEY_ID` & `AWS_DECRET_ACCESS_KEY` (for these please follow AWS best practices in handling them and saving them for later. I save them in AWS Secret Manager).
+
+### Removing everything from AWS at once
 
 If at any point you want to actually remove the entire solution from AWS, you can run this command in your command line (with AWS CLI):
 
@@ -94,3 +128,11 @@ $ aws cloudformation delete-stack --stack-name ms-auth
 ```
 
 This will ask AWS Cloudformation to use the template.yml and your current account deployment to select and remove all related configurations and services. Be advice this may take a few mins to complete even if you see the command finishing right away.
+
+### AWS associated costs
+
+This project stack can stay mostly within the AWS free tier, therefore, not produce any fix recurrent costs associated to the infrastructure deployed.
+
+However, traffic obviously will consume from a different separate cost centers and eventually may produce some costs for you under your AWS account.
+
+Anyways, from a development point ov view we are not currently incurring in any costs associated to this project and we have it permanently deployed in AWS.

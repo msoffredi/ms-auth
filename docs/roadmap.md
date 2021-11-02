@@ -9,3 +9,4 @@
 -   API Gateway endpoint caching (with cache purge on updates)
 -   Development authentication solution (for local dev)
 -   Events for local dev (can use local SAM events + invoke)
+-   First time initialization should be triggered automatically over deployment automation (aws lambda invoke?) and not accessible through an API endpoint
