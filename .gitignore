@@ -2,8 +2,9 @@ node_modules/
 .aws-sam/
 dist/
 .vscode/
+docker/
+coverage/
 
 env.json
 .overmind.sock
-docker/
-coverage/
+samconfig.toml
