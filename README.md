@@ -1,4 +1,4 @@
-# RBAC serverless microservice with AWS, NodeJS, TypeScript
+# RBAC Serverless Microservice with AWS, NodeJS, TypeScript
 
 This is an opensource microservice done in TypeScript and using AWS SAM. This application is a full authorization solution that leverages AWS API Gateway, Lambda Functions, and DynamoDB for a full serverless solution that will charge you only for what you use.
 
@@ -47,6 +47,64 @@ For a development full instance of the entire solution in AWS (in the cloud) you
 
 -   A [GitHub](https://github.com/) account for your repository
 -   An [AWS](https://aws.amazon.com/) account
+
+## Testing the project locally
+
+The project can be tested locally to some degree although for development purposes we suggest using TDD strategies instead of local real testing since it's slow (since SAM emulates some of the services suing a slow docker-based solution).
+
+### Preparing your service for a local start
+
+In order for the service to start locally t
+
+Configure your local DynamoDB access by copying the file `env.json.sample` into a new file named `env.json` and edit the file to make the DynamoDB URI match your local Docker network accessible IP address. In my Mac laptop that was `http://192.168.0.151:8000` and the port has to stay at `8000` (unless you have a conflict which will require more work to get it adjusted).
+
+Remove any existing `.aws-sam` directory in the project root (and any content inside). This directory is ignored but gets created when you try to build the project for an AWS deploy. Trying to run the project locally with an existing directory (and content) may end up in conflicts and/or problems in the future if you are testing changes since AWS will try to run the local copy out of the build and not out of your source code.
+
+You will need [Overmind](https://github.com/DarthSim/overmind) for an easy launch (recommended). But we will include instructions without Overmind if you want to avoid it. Overmind simplifies having 3 services up and running and updating code when changes happen without having to restart anything.
+
+Make sure you run at least once `npm install` to install all the dependencies before moving forward.
+
+### Starting the service locally
+
+If you have Overmind, please use the following command:
+
+```bash
+$ overmind start
+```
+
+And that's pretty much it!
+
+Now, if you don't have Overmind, to do the same you will have to open 3 terminals and run the following commands on each of them:
+
+Terminal 1 (local DynamoDB instance):
+
+```bash
+$ docker-compose up
+```
+
+Terminal 2 (Typescript compiler + update)
+
+```bash
+$ npm run watch
+```
+
+Terminal 3 (SAM service local start)
+
+```bash
+$ sam local start-api --env-vars=env.json 2>&1 | tr "\r" "\n"
+```
+
+Whether you are using Overmind or not, you should be able to validate things are up and running locally by checking the logs on all 3 terminals, and after that by accessing the URL: `http://127.0.0.1:3000/healthcheck` (Postman or similar recommended but this URL should work on your browser too).
+
+Note: the DynamoDB local instance may take a few minutes to start for the first time. It will create a directory that is ignored in the project but where it will save the data so the next time it can start much faster.
+
+### Testing the endpoints
+
+TBD
+
+### Stopping the service locally
+
+To stop the service(es) all you need to do is press `Ctrl + C` on your Overmind terminal, or if you are in the 3 terminals setup, you need to do the same on each terminal (`Ctrl + C` on each of them).
 
 ## Deployment
 
