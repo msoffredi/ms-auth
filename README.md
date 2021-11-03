@@ -10,7 +10,7 @@ The application is 100% setup to spin up locally for development purposes (using
 
 This authorization solution is based on serverless architecture and using AWS Lambda (serverless computing). Here's a quick diagram of the architecture used:
 
-![Architecture](docs/images/architecture.jpg)
+![Architecture](https://github.com/msoffredi/ms-auth/raw/main/docs/images/architecture.jpg) "Architecture"
 
 In the diagram you can see it's using Amazon Cognito for authentication and actually ther project has a pre-configured Cognito User Pool defined in the AWS SAM template but the authentication can be easily changed to something else of course.
 
