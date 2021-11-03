@@ -10,11 +10,17 @@ The application is 100% setup to spin up locally for development purposes (using
 
 This authorization solution is based on serverless architecture and using AWS Lambda (serverless computing). Here's a quick diagram of the architecture used:
 
-![Architecture](https://github.com/msoffredi/ms-auth/raw/main/docs/images/architecture.jpg 'Architecture')
+![Architecture](https://github.com/msoffredi/ms-auth/blob/main/docs/images/architecture.jpeg?raw=true 'Architecture')
 
 In the diagram you can see it's using Amazon Cognito for authentication and actually ther project has a pre-configured Cognito User Pool defined in the AWS SAM template but the authentication can be easily changed to something else of course.
 
 Tha same happends with the event-bus since the project uses Amazon Eventbridge which can be easily changed by any other event-bus of your choice (may require some lift until we support some more options out of the box).
+
+### Data structure
+
+Data is stored in a DynamoDB instance following the following structure and relationships:
+
+![ERD](https://github.com/msoffredi/ms-auth/blob/main/docs/images/erd.jpeg?raw=true 'ERD')
 
 ## AWS Services integrated
 
