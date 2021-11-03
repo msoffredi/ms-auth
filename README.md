@@ -8,6 +8,14 @@ The application is 100% setup to spin up locally for development purposes (using
 
 ## Solution Architecture
 
+This authorization solution is based on serverless architecture and using AWS Lambda (serverless computing). Here's a quick diagram of the architecture used:
+
+![Architecture](docs/images/architecture.jpg)
+
+In the diagram you can see it's using Amazon Cognito for authentication and actually ther project has a pre-configured Cognito User Pool defined in the AWS SAM template but the authentication can be easily changed to something else of course.
+
+Tha same happends with the event-bus since the project uses Amazon Eventbridge which can be easily changed by any other event-bus of your choice (may require some lift until we support some more options out of the box).
+
 ## AWS Services integrated
 
 There are multiple AWS Services integrated into this project, and some indirect ones too. Here's a full list:
@@ -98,7 +106,29 @@ Whether you are using Overmind or not, you should be able to validate things are
 
 Note: the DynamoDB local instance may take a few minutes to start for the first time. It will create a directory that is ignored in the project but where it will save the data so the next time it can start much faster.
 
-### Testing the endpoints
+### Runnint tests
+
+You can execute project tests by running:
+
+```bash
+$ npm run test
+```
+
+If you want to run specific tests, you can use the usual Jest filter parameter. For example:
+
+```bash
+$ npm run test --filter healcheck.test
+```
+
+And if you want to run tests with coverage you can do:
+
+```bash
+$ npm run test:coverage
+```
+
+Which will create a new directory on your project named `coverage` where all the information will be saved including an html-indexed full report.
+
+### Testing endpoints
 
 TBD
 
