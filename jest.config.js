@@ -6,6 +6,7 @@ module.exports = {
         '<rootDir>/.aws-sam',
         '<rootDir>/__tests__/utils',
         '<rootDir>/__tests__/events',
+        '<rootDir>/__tests__/postman',
     ],
     clearMocks: true,
     globalSetup: './node_modules/@shelf/jest-dynamodb/setup.js',
