@@ -542,7 +542,14 @@
 		}
 	],
 	"auth": {
-		"type": "bearer"
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{ms-auth-token}}",
+				"type": "string"
+			}
+		]
 	},
 	"event": [
 		{
@@ -550,7 +557,58 @@
 			"script": {
 				"type": "text/javascript",
 				"exec": [
-					""
+					"var jwtSecret = pm.environment.get('jwt_secret') || ''",
+					"",
+					"// Set headers for JWT",
+					"var header = {",
+					"\t'typ': 'JWT',",
+					"\t'alg': 'HS256'",
+					"};",
+					"",
+					"// Prepare timestamp in seconds",
+					"var currentTimestamp = Math.floor(Date.now() / 1000)",
+					"",
+					"var data = {",
+					"\t'iss': pm.environment.get('jwt_iss') || '',",
+					"\t'ist': pm.environment.get('jwt_ist') || '',",
+					"\t'iat': currentTimestamp,",
+					"\t'exp': currentTimestamp + 30, // expiry time is 30 seconds from time of creation",
+					"\t'jti': 'jwt_nonce',",
+					"    'email': 'test@test.com' // must match the application super user email",
+					"}",
+					"",
+					"function base64url(source) {",
+					"    // Encode in classical base64",
+					"    encodedSource = CryptoJS.enc.Base64.stringify(source)",
+					"    ",
+					"    // Remove padding equal characters",
+					"    encodedSource = encodedSource.replace(/=+$/, '')",
+					"    ",
+					"    // Replace characters according to base64url specifications",
+					"    encodedSource = encodedSource.replace(/\\+/g, '-')",
+					"    encodedSource = encodedSource.replace(/\\//g, '_')",
+					"    ",
+					"    return encodedSource",
+					"}",
+					"",
+					"// encode header",
+					"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header))",
+					"var encodedHeader = base64url(stringifiedHeader)",
+					"",
+					"// encode data",
+					"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data))",
+					"var encodedData = base64url(stringifiedData)",
+					"",
+					"// build token",
+					"var token = `${encodedHeader}.${encodedData}`",
+					"",
+					"// sign token",
+					"var signature = CryptoJS.HmacSHA256(token, jwtSecret)",
+					"signature = base64url(signature)",
+					"var signedToken = `${token}.${signature}`",
+					"",
+					"pm.environment.set('ms-auth-token', signedToken)",
+					"console.log('Signed and non-encoded JWT', signedToken)"
 				]
 			}
 		},

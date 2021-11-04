@@ -104,7 +104,7 @@ $ npm run watch
 Terminal 3 (SAM service local start)
 
 ```bash
-$ sam local start-api --env-vars=env.json 2>&1 | tr "\r" "\n"
+$ sam local start-api --skip-pull-image --env-vars=env.json 2>&1 | tr "\r" "\n"
 ```
 
 Whether you are using Overmind or not, you should be able to validate things are up and running locally by checking the logs on all 3 terminals, and after that by accessing the URL: `http://127.0.0.1:3000/healthcheck` (Postman or similar recommended but this URL should work on your browser too).
@@ -133,15 +133,27 @@ $ npm run test:coverage
 
 Which will create a new directory on your project named `coverage` where all the information will be saved including an html-indexed full report.
 
+### Initializing the local database schema and data
+
+When you run the project for the first time locally, a local DynamoDB will be included and configured, but the initial state will be empty (no tables, no data). To get your local database to an initial state you need to call the healthcheck endpoint with the URL parameter `init=1`. For example: `http://localhost:3000/healthcheck?init=1`
+
+This process will take a few seconds and will create all tables and feed them with initial data to enable one initial user with full permission to access all the authorization endpoints (super admin user). This user will be added with the email address specified in the environment variable `SUPER_ADMIN_EMAIL` which gets shipped with `test@test.com` within the `env.json.sample` file. You can change that to whatever else you prefer if needed but it will work fine just at it is.
+
 ### Testing endpoints
 
-TBD
+To test local endpoints you can use Postman or any other API request utility like curl. However, you will be responsible for generating a valid JWT authentication token and add it to each request as an `Authentication` header (JWT standard Bearer Authentication header). To make your life easier, the project ships with a full Postman collection which includes authentication resolved for you. Please read more about it in the project's Postman [folder](https://github.com/msoffredi/ms-auth/tree/main/__tests__/postman).
 
 ### Stopping the service locally
 
 To stop the service(es) all you need to do is press `Ctrl + C` on your Overmind terminal, or if you are in the 3 terminals setup, you need to do the same on each terminal (`Ctrl + C` on each of them).
 
 ## Deployment
+
+### Accessing local DynamoDB for development purposes
+
+When you are developing locally, and working with a local instance (SAM/Docker), you are most likely using a local DynamoDB too, which runs in a Docker container too and stores the data in a `/docker` folder (ignored in the repo). This helps by persisting the DB data locally so you don't always start with an empty DB.
+
+Sometimes you need to access the DB data to validate development efforts and for that purpose we recommend using [dynamodb-admin](https://www.npmjs.com/package/dynamodb-admin) which creates a nice web-based interface you can open in any browser with full access to the data inside.
 
 ### Deploying to AWS Dev Account from local
 

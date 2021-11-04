@@ -1,4 +1,4 @@
-# Unordered list features in the roadmap
+# Unordered list of features in the roadmap
 
 -   Add a client app secret to Cognito config (and save it for later?).
 -   Replay of events (or latest events) on new version deploy + archive of latest events (or all events?)
