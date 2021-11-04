@@ -48,23 +48,22 @@ There are multiple AWS Services integrated into this project, and some indirect 
 
 ### Local (dev)
 
-For a running local version of most of the solution (Amazon Cognito and Amazon Eventbridge do not have a local version)
+For local running version of the solution (Amazon Cognito and Amazon Eventbridge won't have a local version) you will need:
 
--   [NodeJS](https://nodejs.dev/download/) (14.x or higher)
--   [Docker](https://docs.docker.com/get-docker/) (Docker Desktop recommended) to have a local DynamoDB
+-   [NodeJS](https://nodejs.dev/download/) (14.x)
+-   [Docker](https://docs.docker.com/get-docker/) (needed by both SAM and a local DynamoDB)
 -   [AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html) + [AWS SAM](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-install.html) to be able to start a local API
--   An [AWS](https://aws.amazon.com/) account (if you plan to use Cognito to login)
 
 ### Dev (cloud)
 
-For a development full instance of the entire solution in AWS (in the cloud) you will need:
+For a full development instance of the entire solution in AWS (in the cloud) you will need:
 
 -   A [GitHub](https://github.com/) account for your repository
 -   An [AWS](https://aws.amazon.com/) account
 
-## Testing the project locally
+## Testing the service locally
 
-The project can be tested locally to some degree although for development purposes we suggest using TDD strategies instead of local real testing since it's slow (since SAM emulates some of the services suing a slow docker-based solution).
+The service can be tested locally to some degree although for development purposes we suggest using TDD strategies instead of local real testing since it's slow (since SAM emulates some of the services using a slow docker-based solution).
 
 ### Preparing your service for a local start
 
@@ -112,7 +111,7 @@ Whether you are using Overmind or not, you should be able to validate things are
 
 Note: the DynamoDB local instance may take a few minutes to start for the first time. It will create a directory that is ignored in the project but where it will save the data so the next time it can start much faster.
 
-### Runnint tests
+### Running code-based project tests
 
 You can execute project tests by running:
 
