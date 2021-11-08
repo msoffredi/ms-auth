@@ -10,3 +10,4 @@
 -   First time initialization should be triggered automatically over deployment automation (aws lambda invoke?) and not accessible through an API endpoint
 -   Data changing events should be all published to the event-bus (writes and deleted).
 -   Document API in an OpenAPI file (Swagger)
+-   Move imported resources out of SAM template (Cognito, EventBridge, etc)

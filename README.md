@@ -4,7 +4,7 @@ This is an opensource microservice done in TypeScript and using AWS SAM. This ap
 
 The solution includes a SAM template that will spin up an AWS Cognito User Pool to serve as authentication for the API and all endpoints will be behind this auth service except for `/healthcheck`.
 
-The application is 100% setup to spin up locally for development purposes (using Docker), and also implements a code-base DynamoDB mock module for testing purposes so you don't need a local DB to run the tests.
+The application is 100% configured to spin up locally for development purposes (using Docker), and also implements a code-base DynamoDB mock module for testing purposes so you don't need a local DB to run the tests.
 
 ## Solution Architecture
 
