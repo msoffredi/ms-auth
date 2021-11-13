@@ -58,7 +58,7 @@ For local running version of the solution (Amazon Cognito and Amazon Eventbridge
 
 For a full development instance of the entire solution in AWS (in the cloud) you will need:
 
--   A [GitHub](https://github.com/) account for your repository
+-   A [GitHub](https://github.com/) (Optional) account for your repository only needed for CI/CD (deploying from GitHub)
 -   An [AWS](https://aws.amazon.com/) account
 
 ## Testing the service locally

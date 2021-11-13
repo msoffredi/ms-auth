@@ -11,3 +11,4 @@
 -   Data changing events should be all published to the event-bus (writes and deleted).
 -   Document API in an OpenAPI file (Swagger)
 -   Move imported resources out of SAM template (Cognito, EventBridge, etc)
+-   Separate API handler from Event handler into 2 different lambdas

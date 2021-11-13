@@ -13,6 +13,7 @@ import { eventsRouter } from './events-router';
 import { Config } from '../config';
 import { EventBusTypes } from '../config/types';
 
+// Local configuration
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
         dynamoose.aws.ddb.local(process.env.DYNAMODB_URI);
