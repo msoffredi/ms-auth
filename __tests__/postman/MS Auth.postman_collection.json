@@ -1,0 +1,625 @@
+{
+	"info": {
+		"_postman_id": "61d2e5e9-c035-4d3d-8786-6dc9d61c8a46",
+		"name": "MS Auth",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Operations",
+			"item": [
+				{
+					"name": "Add Operation",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"op123\",\n    \"name\": \"Read operation\"\n}"
+						},
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/operations",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"operations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Operation",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/operations/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"operations",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7c98bbbf-abd3-4018-a3e2-261d243db3fb"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Operations",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/operations",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"operations"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Modules",
+			"item": [
+				{
+					"name": "Get Modules",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/modules",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"modules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Module",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"mod123\",\n    \"name\": \"Users\"\n}"
+						},
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/modules",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"modules"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Module",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/modules/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"modules",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "ff007e0f-4a09-4104-82da-26632d98a1ce"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Permissions",
+			"item": [
+				{
+					"name": "Get Permissions",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/permissions",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Permission",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/permissions/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"permissions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "per123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Permission",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"per123\",\n    \"name\": \"Read Users\",\n    \"module_id\": \"mod123\",\n    \"operation_id\": \"op123\"\n}"
+						},
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/permissions",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"permissions"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Permission",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/permissions/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"permissions",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "per126"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Roles",
+			"item": [
+				{
+					"name": "Get Roles",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/roles",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Role",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"rol123\",\n    \"name\": \"User Manager\",\n    \"permissions\": [\n        { \"id\": \"per123\" }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/roles",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"roles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One Role",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/roles/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"roles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "rol123"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Role",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/roles/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"roles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "rol123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Users",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/users",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"id\": \"user123\",\n    \"username\": \"test@test.com\",\n    \"roles\": [\n        { \"id\": \"rol123\" }\n    ]\n}"
+						},
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/users",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get One User",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{ms-auth-url}}/v0/users/:id",
+							"host": [
+								"{{ms-auth-url}}"
+							],
+							"path": [
+								"v0",
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "user123"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Healthcheck",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{ms-auth-url}}/healthcheck",
+					"host": [
+						"{{ms-auth-url}}"
+					],
+					"path": [
+						"healthcheck"
+					],
+					"query": [
+						{
+							"key": "init",
+							"value": "1",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{ms-auth-token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"var jwtSecret = pm.environment.get('jwt_secret') || ''",
+					"",
+					"// Set headers for JWT",
+					"var header = {",
+					"\t'typ': 'JWT',",
+					"\t'alg': 'HS256'",
+					"};",
+					"",
+					"// Prepare timestamp in seconds",
+					"var currentTimestamp = Math.floor(Date.now() / 1000)",
+					"",
+					"var data = {",
+					"\t'iss': pm.environment.get('jwt_iss') || '',",
+					"\t'ist': pm.environment.get('jwt_ist') || '',",
+					"\t'iat': currentTimestamp,",
+					"\t'exp': currentTimestamp + 30, // expiry time is 30 seconds from time of creation",
+					"\t'jti': 'jwt_nonce',",
+					"    'email': 'test@test.com' // must match the application super user email",
+					"}",
+					"",
+					"function base64url(source) {",
+					"    // Encode in classical base64",
+					"    encodedSource = CryptoJS.enc.Base64.stringify(source)",
+					"    ",
+					"    // Remove padding equal characters",
+					"    encodedSource = encodedSource.replace(/=+$/, '')",
+					"    ",
+					"    // Replace characters according to base64url specifications",
+					"    encodedSource = encodedSource.replace(/\\+/g, '-')",
+					"    encodedSource = encodedSource.replace(/\\//g, '_')",
+					"    ",
+					"    return encodedSource",
+					"}",
+					"",
+					"// encode header",
+					"var stringifiedHeader = CryptoJS.enc.Utf8.parse(JSON.stringify(header))",
+					"var encodedHeader = base64url(stringifiedHeader)",
+					"",
+					"// encode data",
+					"var stringifiedData = CryptoJS.enc.Utf8.parse(JSON.stringify(data))",
+					"var encodedData = base64url(stringifiedData)",
+					"",
+					"// build token",
+					"var token = `${encodedHeader}.${encodedData}`",
+					"",
+					"// sign token",
+					"var signature = CryptoJS.HmacSHA256(token, jwtSecret)",
+					"signature = base64url(signature)",
+					"var signedToken = `${token}.${signature}`",
+					"",
+					"pm.environment.set('ms-auth-token', signedToken)",
+					"console.log('Signed and non-encoded JWT', signedToken)"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
