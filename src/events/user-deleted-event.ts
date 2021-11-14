@@ -32,8 +32,6 @@ export const userDeletedEventHandler: EventHandler = async (
         throw new DatabaseError(`Could not delete user with id: ${userId}`);
     }
 
-    // @todo Publish authorization user deleted event
-
     return {
         deleted: userId,
     };
