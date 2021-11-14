@@ -1,9 +1,13 @@
 .PHONY: build-RuntimeDependenciesLayer build-lambda-common
 .PHONY: build-MsAuthAPIFunction
+.PHONY: build-CognitoPretokenTriggerFunction
 
 build-MsAuthAPIFunction:
 	$(MAKE) HANDLER=src/handlers/auth.ts build-lambda-common
 
+build-CognitoPretokenTriggerFunction:
+	$(MAKE) HANDLER=src/triggers/cognito-pretoken-handler.ts build-lambda-common
+	
 build-lambda-common:
 	npm install
 	rm -rf dist

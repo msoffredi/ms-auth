@@ -34,13 +34,30 @@ Globals:
             AllowOrigin: "'*'"
             AllowCredentials: "'*'"
 
-# Resources declares the AWS resources that you want to include in the stack
-# https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/resources-section-structure.html
 Resources:
-    # Each Lambda function is defined by properties:
-    # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    CognitoPretokenTriggerFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            Handler: dist/triggers/cognito-pretoken-handler.handler
+            Description: Pre-token trigger to add authorization to the id token
+            Runtime: nodejs14.x
+            Environment:
+                Variables:
+                    DYNAMODB_URI: ''
+            Policies:
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBOperationsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBModulesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBPermissionsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBRolesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBUsersTable
 
-    # This is a Lambda function config associated with the source code: in src/handlers/example.ts
     MsAuthAPIFunction:
         Type: AWS::Serverless::Function
         Metadata:
@@ -198,6 +215,8 @@ Resources:
                 - AttributeDataType: String
                   Name: email
                   Required: true
+            LambdaConfig:
+                PreTokenGeneration: !GetAtt CognitoPretokenTriggerFunction.Arn
 
     MyCognitoUserPoolClient:
         Type: AWS::Cognito::UserPoolClient
@@ -330,7 +349,7 @@ Resources:
                 - Arn: !GetAtt MsAuthAPIFunction.Arn
                   Id: 'authorization.input.user.deleted'
 
-    # Test EventBridge permission
+    # EventBridge permission to call authorization lambda
     PermissionForEventsToInvokeLambda:
         Type: AWS::Lambda::Permission
         Properties:
@@ -339,6 +358,16 @@ Resources:
             Action: 'lambda:InvokeFunction'
             Principal: 'events.amazonaws.com'
             SourceArn: !GetAtt AuthInputUserDeletedEventRule.Arn
+
+    # Cognito permission to call authorization trigger lambda
+    PermissionForCognitoToInvokeLambda:
+        Type: AWS::Lambda::Permission
+        Properties:
+            FunctionName:
+                Ref: 'CognitoPretokenTriggerFunction'
+            Action: 'lambda:InvokeFunction'
+            Principal: 'cognito-idp.amazonaws.com'
+            SourceArn: !GetAtt MsAuthCognitoUserPool.Arn
 
 Outputs:
     MsAuthAPIProd:

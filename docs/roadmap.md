@@ -4,7 +4,7 @@
 -   Deploy of some sensitive information into AWS Secrets Manager
 -   List all users API endpoint pagination
 -   Support for other event-bus services (Kinesis, Kafka, nats-streaming)
--   Support for other authorization services (Auth0)
+-   Support for other authentication services (Auth0)
 -   API Gateway endpoint caching (with cache purge on updates)
 -   Events for local dev (can use local SAM events + invoke)
 -   First time initialization should be triggered automatically over deployment automation (aws lambda invoke?) and not accessible through an API endpoint
