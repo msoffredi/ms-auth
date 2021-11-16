@@ -102,25 +102,29 @@ it('throws a 404 error if the id provided for a delete module is not found', asy
 });
 
 it('does not delete a module if it is linked to an existing permission', async () => {
-    const permissions = await Permission.scan().exec();
-    expect(permissions).toBeDefined();
-    expect(permissions.length).toBeGreaterThan(0);
+    const module = { id: 'mod123', name: 'Test module name' };
+    await Module.create(module);
 
-    const moduleId = permissions[0].moduleId;
-    const moduleBefore = await Module.get(moduleId);
-    expect(moduleBefore).toBeDefined();
+    const permission = await Permission.create({
+        id: 'test123',
+        name: 'test permission',
+        moduleId: module.id,
+        operationId: '*',
+    });
+    expect(permission).toBeDefined();
+    expect(permission.id).toBeDefined();
 
     const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
             resource: '/v0/modules/{id}',
-            pathParameters: { id: moduleId },
+            pathParameters: { id: module.id },
         },
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
 
-    const moduleAfter = await Module.get(moduleId);
+    const moduleAfter = await Module.get(module.id);
     expect(moduleAfter).toBeDefined();
 });

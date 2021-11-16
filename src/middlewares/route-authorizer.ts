@@ -25,7 +25,7 @@ export const routeAuthorizer = async (
     try {
         const [, token] = event.headers.Authorization.split(' ');
 
-        // Cognito token payload example
+        // Cognito identity token payload example
         // {
         //     at_hash: 'HabHtPvngfWyNShbQi1Kfg',
         //     sub: 'c31e153a-6691-4106-b6d5-609b48f5a13e',
@@ -77,8 +77,10 @@ export const routeAuthorizer = async (
 
                     validPermissions.forEach((vperm) => {
                         if (
-                            vperm.moduleId === perm.moduleId &&
-                            vperm.operationId === perm.operationId
+                            (perm.moduleId === '*' ||
+                                vperm.moduleId === perm.moduleId) &&
+                            (perm.operationId === '*' ||
+                                vperm.operationId === perm.operationId)
                         ) {
                             authorized = true;
                         }

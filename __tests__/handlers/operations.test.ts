@@ -101,25 +101,30 @@ it('throws a 404 error if the id provided for a delete operation is not found', 
 });
 
 it('does not delete an operation if it is linked to an existing permission', async () => {
-    const permissions = await Permission.scan().exec();
-    expect(permissions).toBeDefined();
-    expect(permissions.length).toBeGreaterThan(0);
+    const operation = { id: 'op123', name: 'Test operation name' };
+    await Operation.create(operation);
 
-    const operationId = permissions[0].operationId;
-    const operationBefore = await Operation.get(operationId);
-    expect(operationBefore).toBeDefined();
+    const permission = await Permission.create({
+        id: 'test1234',
+        name: 'test permission',
+        moduleId: '*',
+        operationId: operation.id,
+    });
+
+    expect(permission).toBeDefined();
+    expect(permission.id).toBeDefined();
 
     const deleteEvent = constructAuthenticatedAPIGwEvent(
         {},
         {
             method: 'DELETE',
             resource: '/v0/operations/{id}',
-            pathParameters: { id: operationId },
+            pathParameters: { id: operation.id },
         },
     );
     const delResult = await handler(deleteEvent);
     expect(delResult.statusCode).toEqual(422);
 
-    const operationAfter = await Operation.get(operationId);
+    const operationAfter = await Operation.get(operation.id);
     expect(operationAfter).toBeDefined();
 });

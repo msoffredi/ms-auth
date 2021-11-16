@@ -1,6 +1,5 @@
 # Unordered list of features in the roadmap
 
--   Implement star as operation and as module
 -   Move imported resources out of SAM template (Cognito, EventBridge, etc)
 
 -   List all users API endpoint pagination

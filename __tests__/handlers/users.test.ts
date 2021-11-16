@@ -7,7 +7,7 @@ import { User, UserDoc } from '../../src/models/user';
 import {
     addUserWithPermissions,
     constructAuthenticatedAPIGwEvent,
-    readUsersPermissionId,
+    superAdminTestPermission,
     testUserEmail,
 } from '../utils/helpers';
 import { publisher } from '../../src/events/event-publisher';
@@ -199,7 +199,7 @@ it('should return a 200 and a user on GET with id equal to the logged in user an
     const user = await User.get(testUserEmail);
     const role = await Role.get(user.roles[0]);
     role.permissions = role.permissions.filter((perm) => {
-        if (perm === readUsersPermissionId) {
+        if (perm === superAdminTestPermission) {
             return false;
         }
 
@@ -221,14 +221,13 @@ it('should return a 200 and a user on GET with id equal to the logged in user an
     const body = JSON.parse(result.body);
     expect(body.id).toEqual(testUserEmail);
     expect(body.permissions).toBeDefined();
-    expect(body.permissions.length).toBeGreaterThan(0);
 });
 
 it('should return 401 on GET with a user without permission and not requesting own id', async () => {
     const user = await User.get(testUserEmail);
     const role = await Role.get(user.roles[0]);
     role.permissions = role.permissions.filter((perm) => {
-        if (perm === readUsersPermissionId) {
+        if (perm === superAdminTestPermission) {
             return false;
         }
 
