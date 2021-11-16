@@ -1,4 +1,4 @@
-import { APIGatewayProxyEvent, EventBridgeEvent } from 'aws-lambda';
+import { APIGatewayProxyEvent, EventBridgeEvent, Context } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import {
     AuthorizationModules,
@@ -238,4 +238,25 @@ export const addUserWithPermissions = async () => {
         id: testUserEmail,
         roles: [role.id],
     });
+};
+
+export const testContext: Context = {
+    callbackWaitsForEmptyEventLoop: false,
+    functionName: '',
+    functionVersion: '',
+    invokedFunctionArn: '',
+    memoryLimitInMB: '',
+    awsRequestId: '',
+    logGroupName: '',
+    logStreamName: '',
+    getRemainingTimeInMillis: () => 0,
+    done: () => {
+        return;
+    },
+    fail: () => {
+        return;
+    },
+    succeed: () => {
+        return;
+    },
 };

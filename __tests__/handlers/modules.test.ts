@@ -2,7 +2,7 @@ import {
     addUserWithPermissions,
     constructAuthenticatedAPIGwEvent,
 } from '../utils/helpers';
-import { handler } from '../../src/handlers/auth';
+import { handler } from '../../src/handlers/auth-api';
 import { Module } from '../../src/models/module';
 import { Permission } from '../../src/models/permission';
 
