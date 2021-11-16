@@ -1,36 +1,62 @@
-import { APIGatewayProxyEvent } from 'aws-lambda';
-import { getOperationsHandler } from '../routeHandlers/getOperations';
-import { ResponseBody, HandlerResponse } from './types';
-import { postOperationHandler } from '../routeHandlers/postOperation';
-import { delOperationHandler } from '../routeHandlers/delOperation';
-import { getModulesHandler } from '../routeHandlers/getModules';
-import { postModuleHandler } from '../routeHandlers/postModule';
-import { delModuleHandler } from '../routeHandlers/delModule';
+import dynamoose from 'dynamoose';
+import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
+import { exit } from 'process';
+import { ResponseBody } from './types';
+import { Config } from '../config';
 import { CustomError } from '../errors/custom-error';
-import { getPermissionsHandler } from '../routeHandlers/getPermissions';
-import { BadMethodError } from '../errors/bad-method-error';
 import { BadRequestError } from '../errors/bad-request-error';
-import { postPermissionHandler } from '../routeHandlers/postPermission';
+import { BadMethodError } from '../errors/bad-method-error';
+import { routeAuthorizer } from '../middlewares/route-authorizer';
+import { delOperationHandler } from '../routeHandlers/delOperation';
+import { delModuleHandler } from '../routeHandlers/delModule';
+import { postModuleHandler } from '../routeHandlers/postModule';
+import { getModulesHandler } from '../routeHandlers/getModules';
+import { postOperationHandler } from '../routeHandlers/postOperation';
+import { getOperationsHandler } from '../routeHandlers/getOperations';
+import { healthcheckHandler } from '../routeHandlers/healthcheck';
 import { delPermissionHandler } from '../routeHandlers/delPermission';
 import { getOnePermissionHandler } from '../routeHandlers/getOnePermission';
-import { getRolesHandler } from '../routeHandlers/getRoles';
-import { postRoleHandler } from '../routeHandlers/postRole';
 import { delRoleHandler } from '../routeHandlers/delRole';
 import { getOneRoleHandler } from '../routeHandlers/getOneRole';
-import { getUsersHandler } from '../routeHandlers/getUsers';
+import { postRoleHandler } from '../routeHandlers/postRole';
+import { getRolesHandler } from '../routeHandlers/getRoles';
+import { postPermissionHandler } from '../routeHandlers/postPermission';
+import { getPermissionsHandler } from '../routeHandlers/getPermissions';
 import { postUserHandler } from '../routeHandlers/postUser';
-import { getOneUserHandler } from '../routeHandlers/getOneUser';
+import { getUsersHandler } from '../routeHandlers/getUsers';
 import { delUserHandler } from '../routeHandlers/delUser';
-import { routeAuthorizer } from '../middlewares/route-authorizer';
-import { Config } from '../config';
-import { healthcheckHandler } from '../routeHandlers/healthcheck';
+import { getOneUserHandler } from '../routeHandlers/getOneUser';
 
-export const apiCallsRouter = async (
+// Local configuration
+if (process.env.AWS_SAM_LOCAL) {
+    if (process.env.DYNAMODB_URI) {
+        dynamoose.aws.ddb.local(process.env.DYNAMODB_URI);
+    } else {
+        console.error('No local DynamoDB URL provided');
+        exit(1);
+    }
+}
+
+export const handler = async (
     event: APIGatewayProxyEvent,
-): Promise<HandlerResponse> => {
+): Promise<APIGatewayProxyResult> => {
+    console.log('Received event:', event);
+
     const auth = Config.Authorization;
     let status = 200;
     let body: ResponseBody = null;
+
+    // if (isAPIGatewayProxyEvent(event)) {
+    //     const response = await apiCallsRouter(event as APIGatewayProxyEvent);
+    //     status = response.status;
+    //     body = response.body;
+    // } else if (isAuthEvent(event)) {
+    //     const response = await eventsRouter(
+    //         event as EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail>,
+    //     );
+    //     status = response.status;
+    //     body = response.body;
+    // }
 
     try {
         switch (event.resource) {
@@ -226,5 +252,8 @@ export const apiCallsRouter = async (
         }
     }
 
-    return { status, body };
+    return {
+        statusCode: status,
+        body: JSON.stringify(body),
+    };
 };

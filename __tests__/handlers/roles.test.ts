@@ -1,4 +1,4 @@
-import { handler } from '../../src/handlers/auth';
+import { handler } from '../../src/handlers/auth-api';
 import { Module } from '../../src/models/module';
 import { Operation } from '../../src/models/operation';
 import { Permission, PermissionDoc } from '../../src/models/permission';

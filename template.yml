@@ -58,13 +58,41 @@ Resources:
                 - DynamoDBCrudPolicy:
                       TableName: !Ref DynamoDBUsersTable
 
+    MsAuthEventsFunction:
+        Type: AWS::Serverless::Function
+        Metadata:
+            BuildMethod: makefile
+        Properties:
+            Handler: dist/handlers/auth-events.handler
+            Description: RBAC auth serverless microservice events handler
+            Runtime: nodejs14.x
+            Environment:
+                Variables:
+                    DYNAMODB_URI: ''
+            Policies:
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBOperationsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBModulesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBPermissionsTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBRolesTable
+                - DynamoDBCrudPolicy:
+                      TableName: !Ref DynamoDBUsersTable
+                - Statement:
+                      - Effect: Allow
+                        Resource: '*'
+                        Action:
+                            - events:PutEvents
+
     MsAuthAPIFunction:
         Type: AWS::Serverless::Function
         Metadata:
             BuildMethod: makefile
         Properties:
-            Handler: dist/handlers/auth.handler
-            Description: RBAC auth serverless microservice
+            Handler: dist/handlers/auth-api.handler
+            Description: RBAC auth serverless microservice API handler
             Runtime: nodejs14.x
             Environment:
                 Variables:
@@ -324,7 +352,7 @@ Resources:
         Properties:
             CodeUri: __tests__/events/publish-eventbridge-delete-user-event/
             Handler: app.lambdaHandler
-            Runtime: nodejs12.x
+            Runtime: nodejs14.x
             Policies:
                 - Statement:
                       - Effect: Allow
@@ -340,13 +368,13 @@ Resources:
             Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
-                    - 'test.users'
+                    - 'ms-user'
                 detail:
                     type:
                         - 'user.deleted'
             State: 'ENABLED'
             Targets:
-                - Arn: !GetAtt MsAuthAPIFunction.Arn
+                - Arn: !GetAtt MsAuthEventsFunction.Arn
                   Id: 'authorization.input.user.deleted'
 
     # EventBridge permission to call authorization lambda

@@ -3,7 +3,7 @@ import {
     constructAPIGwEvent,
     testUserEmail,
 } from '../utils/helpers';
-import { handler } from '../../src/handlers/auth';
+import { handler } from '../../src/handlers/auth-api';
 import { ServiceStatus } from '../../src/handlers/types';
 import { User } from '../../src/models/user';
 
