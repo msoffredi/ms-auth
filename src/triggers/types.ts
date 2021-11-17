@@ -6,10 +6,8 @@ export type CognitoPreTokenGenerationTriggerSources =
     | 'TokenGeneration_RefreshTokens';
 
 /**
- * Array of objects with 1 property in the format of:
+ * Array of arrays of 2 string items:
  *
- * moduleId: operationId
- *
- * where both moduleId and operationId are strings.
+ * [ moduleId, operationId ]
  */
-export type UserPermissionsType = { [moduleId: string]: string }[];
+export type UserPermissionsType = [string, string][];

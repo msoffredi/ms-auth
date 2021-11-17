@@ -1,11 +1,8 @@
 import jwt from 'jsonwebtoken';
-
-import { APIGatewayExtendedEvent, ResponseBody } from '../handlers/types';
+import { ResponseBody } from '../handlers/types';
 import { UnauthorizedError } from '../errors/unauthorized-error';
-import { User } from '../models/user';
-import { Permission } from '../models/permission';
 import { RouteHandler } from '../routeHandlers/types';
-import { Role } from '../models/role';
+import { CustomAPIGatewayProxyEvent } from './types';
 
 export interface AuthPermission {
     operationId: string;
@@ -13,7 +10,7 @@ export interface AuthPermission {
 }
 
 export const routeAuthorizer = async (
-    event: APIGatewayExtendedEvent,
+    event: CustomAPIGatewayProxyEvent,
     routeHandler: RouteHandler,
     validPermissions: AuthPermission[] = [],
     allowOwnRead = false,
@@ -25,7 +22,7 @@ export const routeAuthorizer = async (
     try {
         const [, token] = event.headers.Authorization.split(' ');
 
-        // Cognito token payload example
+        // Cognito identity token payload example
         // {
         //     at_hash: 'HabHtPvngfWyNShbQi1Kfg',
         //     sub: 'c31e153a-6691-4106-b6d5-609b48f5a13e',
@@ -37,53 +34,38 @@ export const routeAuthorizer = async (
         //     exp: 1634998521,
         //     iat: 1634994921,
         //     jti: 'c11b46a4-095d-407d-8261-2d3c881066f0',
-        //     email: 'msoffredi@gmail.com'
+        //     email: 'msoffredi@gmail.com',
+        //     userPermissions: '[["moduleId","operationId"]]'
         // }
         const decodedToken = jwt.decode(token);
 
         if (
             !decodedToken ||
             typeof decodedToken !== 'object' ||
-            !decodedToken.email
+            !decodedToken.email ||
+            !decodedToken.userPermissions
         ) {
             throw new Error(
-                'Provided token does not have a valid format, or does not include e valid email property',
+                'Provided token does not have a valid format, or does not include required properties',
             );
         }
 
-        const user = await User.get(decodedToken.email);
-
-        if (!user) {
-            throw new Error('User does not exist');
-        }
+        const { email, userPermissions } = decodedToken;
 
         // Validate user's permissions
         if (validPermissions.length) {
             let authorized = false;
 
-            for (const roleId of user.roles) {
-                const role = await Role.get(roleId);
-
-                if (!role) {
-                    throw new Error('Invalid or inexistent role id');
-                }
-
-                for (const permissionId of role.permissions) {
-                    const perm = await Permission.get(permissionId);
-
-                    if (!perm) {
-                        throw new Error('Invalid or inexistent permission id');
+            for (const [moduleId, operationId] of JSON.parse(userPermissions)) {
+                validPermissions.forEach((vperm) => {
+                    if (
+                        (moduleId === '*' || vperm.moduleId === moduleId) &&
+                        (operationId === '*' ||
+                            vperm.operationId === operationId)
+                    ) {
+                        authorized = true;
                     }
-
-                    validPermissions.forEach((vperm) => {
-                        if (
-                            vperm.moduleId === perm.moduleId &&
-                            vperm.operationId === perm.operationId
-                        ) {
-                            authorized = true;
-                        }
-                    });
-                }
+                });
             }
 
             if (!authorized) {
@@ -91,7 +73,7 @@ export const routeAuthorizer = async (
                     !allowOwnRead ||
                     !event.pathParameters ||
                     !event.pathParameters.id ||
-                    event.pathParameters.id !== user.id
+                    event.pathParameters.id !== email
                 ) {
                     throw new Error(
                         'Authenticated user has insufficient permissions',
@@ -99,9 +81,9 @@ export const routeAuthorizer = async (
                 } else if (
                     event.pathParameters &&
                     event.pathParameters.id &&
-                    event.pathParameters.id === user.id
+                    event.pathParameters.id === email
                 ) {
-                    event.currentUser = user;
+                    event.currentUser = email;
                 }
             }
         }
