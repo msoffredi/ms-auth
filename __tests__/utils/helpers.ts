@@ -33,10 +33,12 @@ export const constructAuthenticatedAPIGwEvent = (
     message: unknown,
     options: Record<string, unknown>,
     userEmail = testUserEmail,
+    userPermissions = [['*', '*']],
 ): APIGatewayProxyEvent => {
     const token = jwt.sign(
         {
             email: userEmail,
+            userPermissions: JSON.stringify(userPermissions),
         },
         'test',
     );

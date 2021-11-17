@@ -1,6 +1,6 @@
 import { DatabaseError } from '../errors/database-error';
 import { RequestValidationError } from '../errors/request-validation-error';
-import { APIGatewayExtendedEvent } from '../handlers/types';
+import { CustomAPIGatewayProxyEvent } from '../middlewares/types';
 import { Permission } from '../models/permission';
 import { Role } from '../models/role';
 import { User, UserDoc } from '../models/user';
@@ -8,7 +8,7 @@ import { Serializers } from '../models/_common';
 import { RouteHandler } from './types';
 
 export const getOneUserHandler: RouteHandler = async (
-    event: APIGatewayExtendedEvent,
+    event: CustomAPIGatewayProxyEvent,
 ): Promise<UserDoc> => {
     if (!event.pathParameters || !event.pathParameters.id) {
         throw new RequestValidationError([
@@ -27,7 +27,7 @@ export const getOneUserHandler: RouteHandler = async (
         throw new DatabaseError(`Could not retrieve user with id: ${id}`);
     }
 
-    if (event.currentUser && event.currentUser.id === id) {
+    if (event.currentUser && event.currentUser === id) {
         user.permissions = [];
 
         for (const roleId of user.roles) {

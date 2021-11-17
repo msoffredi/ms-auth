@@ -214,6 +214,8 @@ it('should return a 200 and a user on GET with id equal to the logged in user an
             resource: '/v0/users/{id}',
             pathParameters: { id: testUserEmail },
         },
+        testUserEmail,
+        [],
     );
     const result = await handler(getEvent);
 
@@ -242,6 +244,8 @@ it('should return 401 on GET with a user without permission and not requesting o
             resource: '/v0/users/{id}',
             pathParameters: { id: 'other-user' },
         },
+        testUserEmail,
+        [],
     );
     const result = await handler(getEvent);
 

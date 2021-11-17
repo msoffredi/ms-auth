@@ -46,18 +46,6 @@ export const handler = async (
     let status = 200;
     let body: ResponseBody = null;
 
-    // if (isAPIGatewayProxyEvent(event)) {
-    //     const response = await apiCallsRouter(event as APIGatewayProxyEvent);
-    //     status = response.status;
-    //     body = response.body;
-    // } else if (isAuthEvent(event)) {
-    //     const response = await eventsRouter(
-    //         event as EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail>,
-    //     );
-    //     status = response.status;
-    //     body = response.body;
-    // }
-
     try {
         switch (event.resource) {
             case '/v0/users/{id}':

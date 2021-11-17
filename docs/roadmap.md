@@ -12,3 +12,5 @@
 -   Document API in an OpenAPI file (Swagger)
 -   Support for other event-bus services (Kinesis, Kafka, nats-streaming)
 -   Support for other authentication services (Auth0)
+-   On permissions change for a logged-in user implement an update for the session too
+-   Current authorization trigger makes 3 DB calls for one user (can we optimize to just 1 call?)

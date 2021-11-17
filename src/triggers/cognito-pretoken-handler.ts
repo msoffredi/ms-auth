@@ -56,9 +56,10 @@ export const handler = async (
                         const perm = await Permission.get(permissionId);
 
                         if (perm) {
-                            userPermissions.push({
-                                [perm.moduleId]: perm.operationId,
-                            });
+                            userPermissions.push([
+                                perm.moduleId,
+                                perm.operationId,
+                            ]);
                         }
                     }
                 }
