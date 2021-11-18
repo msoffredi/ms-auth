@@ -1,5 +1,3 @@
-import { EventBridgeEvent } from 'aws-lambda';
-
 export enum AuthEventsDetailTypes {
     UserDeleted = 'User Deleted',
 }
@@ -15,7 +13,3 @@ export interface AuthEventDetail {
         userId?: string;
     };
 }
-
-export type EventHandler = (
-    event: EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail>,
-) => Promise<string>;

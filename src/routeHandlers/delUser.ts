@@ -5,9 +5,9 @@ import {
     DeleteRecordResponseBody,
     RouteHandler,
 } from '@jmsoffredi/ms-common';
-import { publisher } from '../events/event-publisher';
 import { AuthEventDetailTypes } from '../events/types';
 import { User } from '../models/user';
+import { authPublisher } from '../events/auth-publisher';
 
 export const delUserHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
@@ -32,7 +32,7 @@ export const delUserHandler: RouteHandler = async (
     }
 
     // Publish authorization.user.deleted event
-    await publisher(AuthEventDetailTypes.AuthUserDeleted, {
+    await authPublisher(AuthEventDetailTypes.AuthUserDeleted, {
         userId: id,
     });
 
