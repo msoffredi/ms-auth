@@ -1,11 +1,18 @@
-import { DatabaseError, RequestValidationError } from '@jmsoffredi/ms-common';
+import {
+    DatabaseError,
+    EventHandler,
+    RequestValidationError,
+} from '@jmsoffredi/ms-common';
 import { EventBridgeEvent } from 'aws-lambda';
 import _ from 'lodash';
 import { Config } from '../config';
 import { User } from '../models/user';
-import { AuthEventDetail, AuthEventsDetailTypes, EventHandler } from './types';
+import { AuthEventDetail, AuthEventsDetailTypes } from './types';
 
-export const userDeletedEventHandler: EventHandler = async (
+export const userDeletedEventHandler: EventHandler<
+    AuthEventsDetailTypes,
+    AuthEventDetail
+> = async (
     event: EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail>,
 ): Promise<string> => {
     const userId = _.get(

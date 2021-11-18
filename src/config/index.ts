@@ -1,9 +1,9 @@
+import { EventBusTypes } from '@jmsoffredi/ms-common';
 import { AuthEventDetailTypes } from '../events/types';
 import {
     AuthorizationModules,
     AuthorizationOperations,
     ConfigType,
-    EventBusTypes,
 } from './types';
 
 export const Config: ConfigType = {

@@ -1,8 +1,4 @@
-import { AuthPermission } from '@jmsoffredi/ms-common';
-
-export enum EventBusTypes {
-    AWSEventBridge = 'aws-event-bridge',
-}
+import { AuthPermission, EventBusTypes } from '@jmsoffredi/ms-common';
 
 export interface ConfigType {
     events: {

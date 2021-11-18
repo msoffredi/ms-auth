@@ -1,10 +1,10 @@
 {
     "name": "ms-auth",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "RBAC authorization serverless microservice",
     "private": true,
     "dependencies": {
-        "@jmsoffredi/ms-common": "^0.1.2",
+        "@jmsoffredi/ms-common": "^0.1.4",
         "aws-sdk": "^2.1007.0",
         "dynamoose": "^2.8.2",
         "jsonwebtoken": "^8.5.1",
