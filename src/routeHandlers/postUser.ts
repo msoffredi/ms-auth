@@ -1,9 +1,8 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { RequestValidationError } from '../errors/request-validation-error';
+import { RequestValidationError, RouteHandler } from '@jmsoffredi/ms-common';
 import { Role } from '../models/role';
 import { User, UserDoc } from '../models/user';
 import { Serializers } from '../models/_common';
-import { RouteHandler } from './types';
 
 export const postUserHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

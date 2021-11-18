@@ -1,9 +1,11 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
+import {
+    DatabaseError,
+    RequestValidationError,
+    RouteHandler,
+} from '@jmsoffredi/ms-common';
 import { Role, RoleDoc } from '../models/role';
 import { Serializers } from '../models/_common';
-import { RouteHandler } from './types';
 
 export const getOneRoleHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

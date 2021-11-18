@@ -3,7 +3,7 @@ import { Callback, Context, EventBridgeEvent } from 'aws-lambda';
 import _ from 'lodash';
 import { exit } from 'process';
 import { Config } from '../config';
-import { CustomError } from '../errors/custom-error';
+import { CustomError } from '@jmsoffredi/ms-common';
 import {
     AuthEventDetail,
     AuthEventDetailTypes,

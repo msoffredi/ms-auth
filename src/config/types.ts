@@ -1,4 +1,4 @@
-import { AuthPermission } from '../middlewares/route-authorizer';
+import { AuthPermission } from '@jmsoffredi/ms-common';
 
 export enum EventBusTypes {
     AWSEventBridge = 'aws-event-bridge',

@@ -1,12 +1,15 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { Config } from '../config';
-import { HealthcheckResponseBody, ServiceStatus } from '../handlers/types';
+import {
+    HealthcheckResponseBody,
+    ServiceStatus,
+    RouteHandler,
+} from '@jmsoffredi/ms-common';
 import { Module } from '../models/module';
 import { Operation } from '../models/operation';
 import { Permission } from '../models/permission';
 import { Role } from '../models/role';
 import { User } from '../models/user';
-import { RouteHandler } from './types';
 
 export const healthcheckHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

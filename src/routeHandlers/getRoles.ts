@@ -1,6 +1,6 @@
 import { Role, RoleDoc } from '../models/role';
 import { Serializers } from '../models/_common';
-import { RouteHandler } from './types';
+import { RouteHandler } from '@jmsoffredi/ms-common';
 
 export const getRolesHandler: RouteHandler = async (): Promise<RoleDoc[]> => {
     const roles = await Role.scan().all().exec();

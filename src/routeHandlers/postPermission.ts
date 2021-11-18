@@ -1,12 +1,14 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
 import { randomUUID } from 'crypto';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
+import {
+    DatabaseError,
+    RequestValidationError,
+    RouteHandler,
+} from '@jmsoffredi/ms-common';
 import { Module } from '../models/module';
 import { Operation } from '../models/operation';
 import { Permission, PermissionDoc } from '../models/permission';
 import { Serializers } from '../models/_common';
-import { RouteHandler } from './types';
 
 export const postPermissionHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

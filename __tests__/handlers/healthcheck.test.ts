@@ -4,7 +4,7 @@ import {
     testUserEmail,
 } from '../utils/helpers';
 import { handler } from '../../src/handlers/auth-api';
-import { ServiceStatus } from '../../src/handlers/types';
+import { ServiceStatus } from '@jmsoffredi/ms-common';
 import { User } from '../../src/models/user';
 
 // This includes all tests for auth.handler()
