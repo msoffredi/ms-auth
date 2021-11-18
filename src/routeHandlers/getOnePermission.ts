@@ -1,6 +1,5 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
+import { DatabaseError, RequestValidationError } from '@jmsoffredi/ms-common';
 import { Permission, PermissionDoc } from '../models/permission';
 import { Serializers } from '../models/_common';
 

@@ -1,12 +1,14 @@
 import dynamoose from 'dynamoose';
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';
 import { exit } from 'process';
-import { ResponseBody } from './types';
+import {
+    ResponseBody,
+    CustomError,
+    BadRequestError,
+    BadMethodError,
+    routeAuthorizer,
+} from '@jmsoffredi/ms-common';
 import { Config } from '../config';
-import { CustomError } from '../errors/custom-error';
-import { BadRequestError } from '../errors/bad-request-error';
-import { BadMethodError } from '../errors/bad-method-error';
-import { routeAuthorizer } from '../middlewares/route-authorizer';
 import { delOperationHandler } from '../routeHandlers/delOperation';
 import { delModuleHandler } from '../routeHandlers/delModule';
 import { postModuleHandler } from '../routeHandlers/postModule';

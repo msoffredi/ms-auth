@@ -1,11 +1,13 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { BadRequestError } from '../errors/bad-request-error';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
-import { DeleteRecordResponseBody } from '../handlers/types';
+import {
+    BadRequestError,
+    DatabaseError,
+    RequestValidationError,
+    DeleteRecordResponseBody,
+    RouteHandler,
+} from '@jmsoffredi/ms-common';
 import { Operation } from '../models/operation';
 import { Permission } from '../models/permission';
-import { RouteHandler } from './types';
 
 export const delOperationHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

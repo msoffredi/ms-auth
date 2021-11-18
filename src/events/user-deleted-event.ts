@@ -1,8 +1,7 @@
+import { DatabaseError, RequestValidationError } from '@jmsoffredi/ms-common';
 import { EventBridgeEvent } from 'aws-lambda';
 import _ from 'lodash';
 import { Config } from '../config';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
 import { User } from '../models/user';
 import { AuthEventDetail, AuthEventsDetailTypes, EventHandler } from './types';
 

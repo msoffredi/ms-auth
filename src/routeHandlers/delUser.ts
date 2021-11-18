@@ -1,11 +1,13 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { DatabaseError } from '../errors/database-error';
-import { RequestValidationError } from '../errors/request-validation-error';
+import {
+    DatabaseError,
+    RequestValidationError,
+    DeleteRecordResponseBody,
+    RouteHandler,
+} from '@jmsoffredi/ms-common';
 import { publisher } from '../events/event-publisher';
 import { AuthEventDetailTypes } from '../events/types';
-import { DeleteRecordResponseBody } from '../handlers/types';
 import { User } from '../models/user';
-import { RouteHandler } from './types';
 
 export const delUserHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,
