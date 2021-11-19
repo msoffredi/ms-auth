@@ -1,5 +1,4 @@
-import { EventBusTypes } from '@jmsoffredi/ms-common';
-import { AuthEventDetailTypes } from '../events/types';
+import { EventBusTypes, events } from '@jmsoffredi/ms-common';
 import {
     AuthorizationModules,
     AuthorizationOperations,
@@ -9,14 +8,12 @@ import {
 export const Config: ConfigType = {
     events: {
         eventBusType: EventBusTypes.AWSEventBridge,
-        busName: 'ms-auth',
-        outputSource: 'authorization-service',
         inputEvents: {
             eventTypeLocation: 'detail.type',
             eventDataLocation: 'detail.data',
             events: {
                 userDeleted: {
-                    eventType: AuthEventDetailTypes.UserDeleted,
+                    eventType: events.UserDeleted.type,
                     userIdLocation: 'detail.data.userId',
                 },
             },
