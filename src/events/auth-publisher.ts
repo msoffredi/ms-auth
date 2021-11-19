@@ -1,9 +1,13 @@
 import { Config } from '../config';
-import { EventData, publisher } from '@jmsoffredi/ms-common';
-import { AuthEventDetailTypes } from './types';
+import {
+    eventBuses,
+    EventData,
+    EventSources,
+    publisher,
+} from '@jmsoffredi/ms-common';
 
 export const authPublisher = async (
-    type: AuthEventDetailTypes,
+    type: string,
     data: EventData,
     detailType = '',
     eventBusType = Config.events.eventBusType,
@@ -13,7 +17,7 @@ export const authPublisher = async (
         data,
         detailType,
         eventBusType,
-        Config.events.busName,
-        Config.events.outputSource,
+        eventBuses[Config.events.eventBusType].busName,
+        EventSources.Authorization,
     );
 };

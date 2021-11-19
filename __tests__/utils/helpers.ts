@@ -3,7 +3,7 @@ import jwt from 'jsonwebtoken';
 import { Permission } from '../../src/models/permission';
 import { Role } from '../../src/models/role';
 import { User } from '../../src/models/user';
-import { AuthEventsDetailTypes, AuthEventDetail } from '../../src/events/types';
+import { AuthEventDetail } from '../../src/events/types';
 
 export const testUserEmail = 'test@test.com';
 export const superAdminTestPermission = 'super-admin-test-permission';
@@ -61,9 +61,9 @@ export const constructAuthenticatedAPIGwEvent = (
  * @returns
  */
 export const constructEventBridgeEvent = (
-    detailType: AuthEventsDetailTypes,
+    detailType: string,
     detail: AuthEventDetail,
-): EventBridgeEvent<AuthEventsDetailTypes, AuthEventDetail> => {
+): EventBridgeEvent<string, AuthEventDetail> => {
     return {
         version: '0',
         id: '123456',

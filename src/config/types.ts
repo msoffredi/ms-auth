@@ -3,8 +3,6 @@ import { AuthPermission, EventBusTypes } from '@jmsoffredi/ms-common';
 export interface ConfigType {
     events: {
         eventBusType: EventBusTypes;
-        busName: string;
-        outputSource: string;
         inputEvents: {
             eventTypeLocation: string;
             eventDataLocation: string;
