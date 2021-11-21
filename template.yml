@@ -377,6 +377,15 @@ Resources:
                 - Arn: !GetAtt MsAuthEventsFunction.Arn
                   Id: 'authorization.input.user.deleted'
 
+    # Test archive for default event-bus retaining 1 day of events for debug purposes
+    DefaultEventsArchive:
+        Type: AWS::Events::Archive
+        Properties:
+            ArchiveName: Default-One-Day
+            Description: Archive of one day retention for the default event-bus
+            RetentionDays: 1
+            SourceArn: !GetAtt MsAuthEventsFunction.Arn
+
     # EventBridge permission to call authorization lambda
     PermissionForEventsToInvokeLambda:
         Type: AWS::Lambda::Permission
