@@ -340,7 +340,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": \"rol123\",\n    \"name\": \"User Manager\",\n    \"permissions\": [\n        { \"id\": \"per123\" }\n    ]\n}"
+							"raw": "{\n    \"id\": \"rol123\",\n    \"name\": \"User Manager\",\n    \"permissions\": [ \"per123\" ]\n}"
 						},
 						"url": {
 							"raw": "{{ms-auth-url}}/v0/roles",
@@ -459,7 +459,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"id\": \"user123\",\n    \"username\": \"test@test.com\",\n    \"roles\": [\n        { \"id\": \"rol123\" }\n    ]\n}"
+							"raw": "{\n    \"id\": \"test@test.com\",\n    \"roles\": [ \"rol123\" ]\n}"
 						},
 						"url": {
 							"raw": "{{ms-auth-url}}/v0/users",

@@ -3,11 +3,13 @@ import { Callback, Context, EventBridgeEvent } from 'aws-lambda';
 import _ from 'lodash';
 import { exit } from 'process';
 import { Config } from '../config';
-import { CustomError, events } from '@jmsoffredi/ms-common';
-import { AuthEventDetail } from '../events/types';
+import {
+    CustomError,
+    events,
+    UserDeletedEventDataType,
+} from '@jmsoffredi/ms-common';
 import { userDeletedEventHandler } from '../events/user-deleted-event';
 
-// Local configuration
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
         dynamoose.aws.ddb.local(process.env.DYNAMODB_URI);
@@ -18,7 +20,7 @@ if (process.env.AWS_SAM_LOCAL) {
 }
 
 export const handler = async (
-    event: EventBridgeEvent<string, AuthEventDetail>,
+    event: EventBridgeEvent<string, UserDeletedEventDataType>,
     _context: Context,
     callback: Callback,
 ): Promise<void> => {

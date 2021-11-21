@@ -1,9 +1,9 @@
+import { UserDeletedEventDataType } from '@jmsoffredi/ms-common';
 import { APIGatewayProxyEvent, EventBridgeEvent, Context } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import { Permission } from '../../src/models/permission';
 import { Role } from '../../src/models/role';
 import { User } from '../../src/models/user';
-import { AuthEventDetail } from '../../src/events/types';
 
 export const testUserEmail = 'test@test.com';
 export const superAdminTestPermission = 'super-admin-test-permission';
@@ -62,8 +62,8 @@ export const constructAuthenticatedAPIGwEvent = (
  */
 export const constructEventBridgeEvent = (
     detailType: string,
-    detail: AuthEventDetail,
-): EventBridgeEvent<string, AuthEventDetail> => {
+    detail: UserDeletedEventDataType,
+): EventBridgeEvent<string, UserDeletedEventDataType> => {
     return {
         version: '0',
         id: '123456',

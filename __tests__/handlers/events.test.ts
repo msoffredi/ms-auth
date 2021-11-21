@@ -1,4 +1,4 @@
-import { events } from '@jmsoffredi/ms-common';
+import { Types } from '@jmsoffredi/ms-common';
 import { handler } from '../../src/handlers/auth-events';
 import { User } from '../../src/models/user';
 import {
@@ -15,8 +15,8 @@ it('Deletes a user on user.deleted event-bus event with valid user in the DB', a
     const user = await User.get(testUserEmail);
     expect(user).toBeDefined();
 
-    const event = constructEventBridgeEvent(events.UserDeleted.type, {
-        type: events.UserDeleted.type,
+    const event = constructEventBridgeEvent(Types.UserDeleted, {
+        type: Types.UserDeleted,
         data: {
             userId: testUserEmail,
         },

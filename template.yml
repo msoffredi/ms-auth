@@ -378,13 +378,13 @@ Resources:
                   Id: 'authorization.input.user.deleted'
 
     # Test archive for default event-bus retaining 1 day of events for debug purposes
-    DefaultEventsArchive:
-        Type: AWS::Events::Archive
-        Properties:
-            ArchiveName: Default-One-Day
-            Description: Archive of one day retention for the default event-bus
-            RetentionDays: 1
-            SourceArn: arn:aws:events:us-east-1:653284769887:event-bus/default
+    # DefaultEventsArchive:
+    #     Type: AWS::Events::Archive
+    #     Properties:
+    #         ArchiveName: Default-One-Day
+    #         Description: Archive of one day retention for the default event-bus
+    #         RetentionDays: 1
+    #         SourceArn: arn:aws:events:us-east-1:653284769887:event-bus/default
 
     # EventBridge permission to call authorization lambda
     PermissionForEventsToInvokeLambda:
