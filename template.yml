@@ -384,7 +384,7 @@ Resources:
             ArchiveName: Default-One-Day
             Description: Archive of one day retention for the default event-bus
             RetentionDays: 1
-            SourceArn: !GetAtt MsAuthEventsFunction.Arn
+            SourceArn: arn:aws:events:us-east-1:653284769887:event-bus/default
 
     # EventBridge permission to call authorization lambda
     PermissionForEventsToInvokeLambda:
