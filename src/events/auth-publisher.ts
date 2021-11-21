@@ -1,20 +1,18 @@
 import { Config } from '../config';
 import {
     eventBuses,
-    EventData,
+    EventDataType,
     EventSources,
     publisher,
 } from '@jmsoffredi/ms-common';
 
 export const authPublisher = async (
-    type: string,
-    data: EventData,
+    data: EventDataType,
     detailType = '',
 ): Promise<void> => {
     await publisher(
-        type,
         data,
-        detailType || type,
+        detailType || data.type,
         Config.events.eventBusType,
         eventBuses[Config.events.eventBusType].busName,
         EventSources.Authorization,
