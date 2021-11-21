@@ -12,7 +12,7 @@ import { AuthEventDetail } from './types';
 export const userDeletedEventHandler: EventHandler<string, AuthEventDetail> =
     async (
         event: EventBridgeEvent<string, AuthEventDetail>,
-    ): Promise<string> => {
+    ): Promise<string | null> => {
         const userId = _.get(
             event,
             Config.events.inputEvents.events.userDeleted.userIdLocation,
@@ -35,5 +35,5 @@ export const userDeletedEventHandler: EventHandler<string, AuthEventDetail> =
             throw new DatabaseError(`Could not delete user with id: ${userId}`);
         }
 
-        return `Deleted user: userId`;
+        return null;
     };
