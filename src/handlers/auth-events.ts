@@ -6,9 +6,11 @@ import { Config } from '../config';
 import {
     CustomError,
     events,
+    UserCreatedEventDataType,
     UserDeletedEventDataType,
 } from '@jmsoffredi/ms-common';
 import { userDeletedEventHandler } from '../events/user-deleted-event';
+import { userCreatedEventHandler } from '../events/user-created-event';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -20,7 +22,10 @@ if (process.env.AWS_SAM_LOCAL) {
 }
 
 export const handler = async (
-    event: EventBridgeEvent<string, UserDeletedEventDataType>,
+    event: EventBridgeEvent<
+        string,
+        UserDeletedEventDataType | UserCreatedEventDataType
+    >,
     _context: Context,
     callback: Callback,
 ): Promise<void> => {
@@ -32,7 +37,21 @@ export const handler = async (
     // User deleted event
     if (eventType === events.UserDeleted.type) {
         try {
-            error = await userDeletedEventHandler(event);
+            error = await userDeletedEventHandler(
+                event as EventBridgeEvent<string, UserDeletedEventDataType>,
+            );
+        } catch (err) {
+            console.error(err);
+
+            if (err instanceof CustomError) {
+                error = JSON.stringify(err.serializeErrors());
+            }
+        }
+    } else if (eventType === events.UserCreated.type) {
+        try {
+            error = await userCreatedEventHandler(
+                event as EventBridgeEvent<string, UserCreatedEventDataType>,
+            );
         } catch (err) {
             console.error(err);
 

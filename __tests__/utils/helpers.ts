@@ -1,4 +1,7 @@
-import { UserDeletedEventDataType } from '@jmsoffredi/ms-common';
+import {
+    UserCreatedEventDataType,
+    UserDeletedEventDataType,
+} from '@jmsoffredi/ms-common';
 import { APIGatewayProxyEvent, EventBridgeEvent, Context } from 'aws-lambda';
 import jwt from 'jsonwebtoken';
 import { Permission } from '../../src/models/permission';
@@ -62,8 +65,11 @@ export const constructAuthenticatedAPIGwEvent = (
  */
 export const constructEventBridgeEvent = (
     detailType: string,
-    detail: UserDeletedEventDataType,
-): EventBridgeEvent<string, UserDeletedEventDataType> => {
+    detail: UserDeletedEventDataType | UserCreatedEventDataType,
+): EventBridgeEvent<
+    string,
+    UserDeletedEventDataType | UserCreatedEventDataType
+> => {
     return {
         version: '0',
         id: '123456',

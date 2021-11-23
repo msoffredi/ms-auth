@@ -16,6 +16,11 @@ export const Config: ConfigType = {
                     eventType: events.UserDeleted.type,
                     userIdLocation: 'detail.data.userId',
                 },
+                userCreated: {
+                    eventType: events.UserCreated.type,
+                    userIdLocation: 'detail.data.id',
+                    userEmailLocation: 'detail.data.email',
+                },
             },
         },
     },

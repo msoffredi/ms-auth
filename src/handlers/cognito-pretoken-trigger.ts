@@ -8,10 +8,6 @@ import { exit } from 'process';
 import { Permission } from '../models/permission';
 import { Role } from '../models/role';
 import { User } from '../models/user';
-import {
-    CognitoPreTokenGenerationTriggerSources,
-    UserPermissionsType,
-} from './types';
 
 if (process.env.AWS_SAM_LOCAL) {
     if (process.env.DYNAMODB_URI) {
@@ -21,6 +17,20 @@ if (process.env.AWS_SAM_LOCAL) {
         exit(1);
     }
 }
+
+type CognitoPreTokenGenerationTriggerSources =
+    | 'TokenGeneration_HostedAuth'
+    | 'TokenGeneration_Authentication'
+    | 'TokenGeneration_NewPasswordChallenge'
+    | 'TokenGeneration_AuthenticateDevice'
+    | 'TokenGeneration_RefreshTokens';
+
+/**
+ * Array of arrays of 2 string items:
+ *
+ * [ moduleId, operationId ]
+ */
+type UserPermissionsType = [string, string][];
 
 export const handler = async (
     event: BasePreTokenGenerationTriggerEvent<CognitoPreTokenGenerationTriggerSources>,
