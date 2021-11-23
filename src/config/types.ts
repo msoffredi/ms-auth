@@ -11,6 +11,11 @@ export interface ConfigType {
                     eventType: string;
                     userIdLocation: string;
                 };
+                userCreated: {
+                    eventType: string;
+                    userIdLocation: string;
+                    userEmailLocation: string;
+                };
             };
         };
     };

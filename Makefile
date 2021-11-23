@@ -10,7 +10,7 @@ build-MsAuthEventsFunction:
 	$(MAKE) HANDLER=src/handlers/auth-events.ts build-lambda-common
 
 build-CognitoPretokenTriggerFunction:
-	$(MAKE) HANDLER=src/triggers/cognito-pretoken-handler.ts build-lambda-common
+	$(MAKE) HANDLER=src/handlers/cognito-pretoken-trigger.ts build-lambda-common
 	
 build-lambda-common:
 	npm install

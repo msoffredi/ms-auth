@@ -40,7 +40,7 @@ Resources:
         Metadata:
             BuildMethod: makefile
         Properties:
-            Handler: dist/triggers/cognito-pretoken-handler.handler
+            Handler: dist/handlers/cognito-pretoken-trigger.handler
             Description: Pre-token trigger to add authorization to the id token
             Runtime: nodejs14.x
             Environment:
@@ -360,7 +360,6 @@ Resources:
                         Action:
                             - events:PutEvents
 
-    # Test eventbridge rule for user.deleted test events from above test lambda
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
@@ -376,6 +375,22 @@ Resources:
             Targets:
                 - Arn: !GetAtt MsAuthEventsFunction.Arn
                   Id: 'authorization.input.user.deleted'
+
+    AuthInputUserCreatedEventRule:
+        Type: AWS::Events::Rule
+        Properties:
+            # EventBusName: !GetAtt EventBus.Arn
+            Description: 'User created event for authorization service'
+            EventPattern:
+                source:
+                    - 'user-service'
+                detail:
+                    type:
+                        - 'user.created'
+            State: 'ENABLED'
+            Targets:
+                - Arn: !GetAtt MsAuthEventsFunction.Arn
+                  Id: 'authorization.input.user.created'
 
     # Test archive for default event-bus retaining 1 day of events for debug purposes
     # DefaultEventsArchive:
