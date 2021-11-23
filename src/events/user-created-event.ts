@@ -83,7 +83,7 @@ const initSuperAdminRole = async (): Promise<string[]> => {
         });
     }
 
-    const roles = await Role.scan().where('roles').eq([perm.id]).exec();
+    const roles = await Role.scan().where('permissions').eq([perm.id]).exec();
 
     if (roles && roles.length) {
         role = roles[0];

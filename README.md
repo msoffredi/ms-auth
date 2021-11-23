@@ -135,9 +135,9 @@ Which will create a new directory on your project named `coverage` where all the
 
 ### Initializing the local database schema and data
 
-When you run the project for the first time locally, a local DynamoDB will be included and configured, but the initial state will be empty (no tables, no data). To get your local database to an initial state you need to call the healthcheck endpoint with the URL parameter `init=1`. For example: `http://localhost:3000/healthcheck?init=1`
+You can not initialize your local DynamoDB manually. Instead, the microservice is prepared to listen and auto-initialize when a new `user.created` event is triggered that matches the `SUPER_ADMIN_EMAIL` environment variable defined on your authorization microservice.
 
-This process will take a few seconds and will create all tables and feed them with initial data to enable one initial user with full permission to access all the authorization endpoints (super admin user). This user will be added with the email address specified in the environment variable `SUPER_ADMIN_EMAIL` which gets shipped with `test@test.com` within the `env.json.sample` file. You can change that to whatever else you prefer if needed but it will work fine just at it is.
+If the above happens, a new user will be created matching the new user from the event, and with one role (a super admin role), with one permission (a super admin permission) with both `moduleId` and `operationId` as `*` meaning this user will be allmighty.
 
 ### Testing endpoints
 
