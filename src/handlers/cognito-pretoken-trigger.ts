@@ -50,12 +50,12 @@ export const handler = async (
     ) {
         console.log('User status invalid', userAttributes);
         error = 'User account status can not be authorized';
-    } else if (!userAttributes.email) {
-        console.log('User email missing', userAttributes);
-        error = 'User email is missing in user attributes';
+    } else if (!userAttributes['custom:userId']) {
+        console.log('custom:userId missing', userAttributes);
+        error = 'User id (custom:userId) is missing in user attributes';
     } else {
         const userPermissions: UserPermissionsType = [];
-        const user = await User.get(userAttributes.email);
+        const user = await User.get(userAttributes['custom:userId']);
 
         if (user) {
             for (const roleId of user.roles) {
