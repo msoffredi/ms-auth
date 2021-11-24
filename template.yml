@@ -7,9 +7,13 @@ Parameters:
     SuperAdminEmail:
         Type: String
         Description: The email address of the default user to be added to the Cognito user pool by default
-    AuthDomainName:
+    # AuthDomainName:
+    #     Type: String
+    #     Description: Prefix for the domain name Cognito uses for its UI (must be unique in the entire AWS)
+    CognitoUserPoolArn:
         Type: String
-        Description: Prefix for the domain name Cognito uses for its UI (must be unique in the entire AWS)
+        Description: Imported Cognito User Pool Arn to use in the template
+        Default: arn:aws:cognito-idp:us-east-1:653284769887:userpool/us-east-1_ZV75Z8oNA
 
 Globals:
     Function:
@@ -25,7 +29,7 @@ Globals:
         Auth:
             Authorizers:
                 MsAuthCognitoAuthorizer:
-                    UserPoolArn: arn:aws:cognito-idp:us-east-1:653284769887:userpool/us-east-1_ZV75Z8oNA
+                    UserPoolArn: !Ref CognitoUserPoolArn
                     AuthType: COGNITO_USER_POOLS
             DefaultAuthorizer: MsAuthCognitoAuthorizer
         Cors:
@@ -336,25 +340,6 @@ Resources:
                 - AttributeName: id
                   KeyType: HASH
 
-    # EventBus:
-    #     Type: AWS::Events::EventBus
-    #     Properties:
-    #         Name: 'ms-auth'
-
-    # Testing Lambda function to create a delete user event using EventBridge
-    createDeleteUserEventForTestingFunction:
-        Type: AWS::Serverless::Function
-        Properties:
-            CodeUri: __tests__/events/publish-eventbridge-delete-user-event/
-            Handler: app.lambdaHandler
-            Runtime: nodejs14.x
-            Policies:
-                - Statement:
-                      - Effect: Allow
-                        Resource: '*'
-                        Action:
-                            - events:PutEvents
-
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
@@ -423,7 +408,7 @@ Resources:
                 Ref: 'CognitoPretokenTriggerFunction'
             Action: 'lambda:InvokeFunction'
             Principal: 'cognito-idp.amazonaws.com'
-            SourceArn: !GetAtt MsAuthCognitoUserPool.Arn
+            SourceArn: !Ref CognitoUserPoolArn
 
 Outputs:
     MsAuthAPIProd:
