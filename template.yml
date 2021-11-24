@@ -7,9 +7,6 @@ Parameters:
     SuperAdminEmail:
         Type: String
         Description: The email address of the default user to be added to the Cognito user pool by default
-    # AuthDomainName:
-    #     Type: String
-    #     Description: Prefix for the domain name Cognito uses for its UI (must be unique in the entire AWS)
     CognitoUserPoolArn:
         Type: String
         Description: Imported Cognito User Pool Arn to use in the template
@@ -234,52 +231,6 @@ Resources:
                 - nodejs14.x
             RetentionPolicy: Retain
 
-    # MsAuthCognitoUserPool:
-    #     Type: AWS::Cognito::UserPool
-    #     Properties:
-    #         UserPoolName: MsAuth
-    #         Policies:
-    #             PasswordPolicy:
-    #                 MinimumLength: 8
-    #         UsernameAttributes:
-    #             - email
-    #         Schema:
-    #             - AttributeDataType: String
-    #               Name: email
-    #               Required: true
-    #             - AttributeDataType: String
-    #               Mutable: false
-    #               Name: userId
-    #         LambdaConfig:
-    #             PreTokenGeneration: !GetAtt CognitoPretokenTriggerFunction.Arn
-
-    # MsAuthCognitoUserPoolClient:
-    #     Type: AWS::Cognito::UserPoolClient
-    #     Properties:
-    #         UserPoolId: !Ref MsAuthCognitoUserPool
-    #         ClientName: MsAuthClient
-    #         GenerateSecret: false
-    #         # You can edit this in the future to match your desired callback URL
-    #         CallbackURLs:
-    #             - https://soffredi.org
-    #         AllowedOAuthFlowsUserPoolClient: true
-    #         AllowedOAuthFlows:
-    #             - code
-    #             - implicit
-    #         AllowedOAuthScopes:
-    #             - email
-    #             - openid
-    #             - profile
-    #             - aws.cognito.signin.user.admin
-    #         SupportedIdentityProviders:
-    #             - COGNITO
-
-    # MsAuthCognitoDomain:
-    #     Type: AWS::Cognito::UserPoolDomain
-    #     Properties:
-    #         UserPoolId: !Ref MsAuthCognitoUserPool
-    #         Domain: !Ref AuthDomainName
-
     DynamoDBOperationsTable:
         Type: AWS::DynamoDB::Table
         Properties:
@@ -343,7 +294,6 @@ Resources:
     AuthInputUserDeletedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            # EventBusName: !GetAtt EventBus.Arn
             Description: 'User deleted event for authorization service'
             EventPattern:
                 source:
@@ -359,7 +309,6 @@ Resources:
     AuthInputUserCreatedEventRule:
         Type: AWS::Events::Rule
         Properties:
-            # EventBusName: !GetAtt EventBus.Arn
             Description: 'User created event for authorization service'
             EventPattern:
                 source:
@@ -372,16 +321,6 @@ Resources:
                 - Arn: !GetAtt MsAuthEventsFunction.Arn
                   Id: 'authorization.input.user.created'
 
-    # Test archive for default event-bus retaining 1 day of events for debug purposes
-    # DefaultEventsArchive:
-    #     Type: AWS::Events::Archive
-    #     Properties:
-    #         ArchiveName: Default-One-Day
-    #         Description: Archive of one day retention for the default event-bus
-    #         RetentionDays: 1
-    #         SourceArn: arn:aws:events:us-east-1:653284769887:event-bus/default
-
-    # EventBridge permission to call authorization lambda
     PermissionForEventsToInvokeLambdaOnUserDeleted:
         Type: AWS::Lambda::Permission
         Properties:
@@ -400,7 +339,6 @@ Resources:
             Principal: 'events.amazonaws.com'
             SourceArn: !GetAtt AuthInputUserCreatedEventRule.Arn
 
-    # Cognito permission to call authorization trigger lambda
     PermissionForCognitoToInvokeLambda:
         Type: AWS::Lambda::Permission
         Properties:
@@ -409,17 +347,3 @@ Resources:
             Action: 'lambda:InvokeFunction'
             Principal: 'cognito-idp.amazonaws.com'
             SourceArn: !Ref CognitoUserPoolArn
-
-Outputs:
-    MsAuthAPIProd:
-        Description: 'API Gateway endpoint URL for Prod environment'
-        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod'
-    MsAuthAPIStage:
-        Description: 'API Gateway endpoint URL for Stage environment'
-        Value: !Sub 'https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Stage'
-    MsAuthAPIFunction:
-        Description: 'Auth API Lambda Function ARN'
-        Value: !GetAtt MsAuthAPIFunction.Arn
-    MsAuthAPIFunctionIamRole:
-        Description: 'Implicit IAM Role created for Auth API function'
-        Value: !GetAtt MsAuthAPIFunctionRole.Arn
