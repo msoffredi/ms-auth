@@ -25,7 +25,7 @@ Globals:
         Auth:
             Authorizers:
                 MsAuthCognitoAuthorizer:
-                    UserPoolArn: !GetAtt MsAuthCognitoUserPool.Arn
+                    UserPoolArn: arn:aws:cognito-idp:us-east-1:653284769887:userpool/us-east-1_ZV75Z8oNA
                     AuthType: COGNITO_USER_POOLS
             DefaultAuthorizer: MsAuthCognitoAuthorizer
         Cors:
@@ -230,56 +230,51 @@ Resources:
                 - nodejs14.x
             RetentionPolicy: Retain
 
-    MsAuthCognitoUserPool:
-        Type: AWS::Cognito::UserPool
-        Properties:
-            UserPoolName: MsAuth
-            Policies:
-                PasswordPolicy:
-                    MinimumLength: 8
-            UsernameAttributes:
-                - email
-            Schema:
-                - AttributeDataType: String
-                  Name: email
-                  Required: true
-            LambdaConfig:
-                PreTokenGeneration: !GetAtt CognitoPretokenTriggerFunction.Arn
+    # MsAuthCognitoUserPool:
+    #     Type: AWS::Cognito::UserPool
+    #     Properties:
+    #         UserPoolName: MsAuth
+    #         Policies:
+    #             PasswordPolicy:
+    #                 MinimumLength: 8
+    #         UsernameAttributes:
+    #             - email
+    #         Schema:
+    #             - AttributeDataType: String
+    #               Name: email
+    #               Required: true
+    #             - AttributeDataType: String
+    #               Mutable: false
+    #               Name: userId
+    #         LambdaConfig:
+    #             PreTokenGeneration: !GetAtt CognitoPretokenTriggerFunction.Arn
 
-    MyCognitoUserPoolClient:
-        Type: AWS::Cognito::UserPoolClient
-        Properties:
-            UserPoolId: !Ref MsAuthCognitoUserPool
-            ClientName: MsAuthClient
-            GenerateSecret: false
-            # You can edit this in the future to match your desired callback URL
-            CallbackURLs:
-                - https://soffredi.org
-            AllowedOAuthFlowsUserPoolClient: true
-            AllowedOAuthFlows:
-                - code
-                - implicit
-            AllowedOAuthScopes:
-                - email
-                - openid
-                - profile
-                - aws.cognito.signin.user.admin
-            SupportedIdentityProviders:
-                - COGNITO
-    AuthDomain:
-        Type: AWS::Cognito::UserPoolDomain
-        Properties:
-            UserPoolId: !Ref MsAuthCognitoUserPool
-            Domain: !Ref AuthDomainName
+    # MsAuthCognitoUserPoolClient:
+    #     Type: AWS::Cognito::UserPoolClient
+    #     Properties:
+    #         UserPoolId: !Ref MsAuthCognitoUserPool
+    #         ClientName: MsAuthClient
+    #         GenerateSecret: false
+    #         # You can edit this in the future to match your desired callback URL
+    #         CallbackURLs:
+    #             - https://soffredi.org
+    #         AllowedOAuthFlowsUserPoolClient: true
+    #         AllowedOAuthFlows:
+    #             - code
+    #             - implicit
+    #         AllowedOAuthScopes:
+    #             - email
+    #             - openid
+    #             - profile
+    #             - aws.cognito.signin.user.admin
+    #         SupportedIdentityProviders:
+    #             - COGNITO
 
-    TestUser:
-        Type: AWS::Cognito::UserPoolUser
-        Properties:
-            UserPoolId: !Ref MsAuthCognitoUserPool
-            Username: !Ref SuperAdminEmail
-            UserAttributes:
-                - Name: email
-                  Value: !Ref SuperAdminEmail
+    # MsAuthCognitoDomain:
+    #     Type: AWS::Cognito::UserPoolDomain
+    #     Properties:
+    #         UserPoolId: !Ref MsAuthCognitoUserPool
+    #         Domain: !Ref AuthDomainName
 
     DynamoDBOperationsTable:
         Type: AWS::DynamoDB::Table
