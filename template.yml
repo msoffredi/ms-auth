@@ -10,7 +10,6 @@ Parameters:
     CognitoUserPoolArn:
         Type: String
         Description: Imported Cognito User Pool Arn to use in the template
-        Default: arn:aws:cognito-idp:us-east-1:653284769887:userpool/us-east-1_ZV75Z8oNA
 
 Globals:
     Function:
