@@ -15,4 +15,5 @@ try {
     printUserPoolArn('MsId', cognitoISP);
 } catch (err) {
     console.error(err.message);
+    exit(1);
 }
