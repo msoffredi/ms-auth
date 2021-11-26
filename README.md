@@ -220,7 +220,6 @@ In order for the AWS deployment GitHub action to work you need to add some secre
 -   `AWS_SECRET_ACCESS_KEY` = A matching secret access key for the same user above
 -   `SUPER_ADMIN_EMAIL` = The email address of the super admin added as first user to the user pool
 -   `DEPLOY_S3_BUCKET` = An S3 bucket name to use for deployment purposes (this must be unique in the entire AWS)
--   `AUTH_DOMAIN_NAME` = Prefix for AWS Cognito to use for its UI (this must be unique in the entire AWS)
 
 I recommend you take note of all of these configurations in a personal document or similar because you won't have access to these values in the future. The ones you want to be careful about are `AWS_ACCESS_KEY_ID` & `AWS_DECRET_ACCESS_KEY` (for these please follow AWS best practices in handling them and saving them for later. I save them in AWS Secret Manager).
 
