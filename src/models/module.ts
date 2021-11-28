@@ -1,6 +1,10 @@
+import {
+    modelOptions,
+    Serializers,
+    SerializersOptions,
+} from '@jmsoffredi/ms-common';
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
-import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface ModuleDoc extends Document {
     id: string;
@@ -23,7 +27,7 @@ const moduleSchema = new dynamoose.Schema(
 const Module = dynamoose.model<ModuleDoc>(
     'ms-auth-modules',
     moduleSchema,
-    localModelOptions,
+    modelOptions,
 );
 
 Module.serializer.add(

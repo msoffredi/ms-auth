@@ -1,7 +1,11 @@
+import {
+    modelOptions,
+    Serializers,
+    SerializersOptions,
+} from '@jmsoffredi/ms-common';
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
 import { PermissionDoc } from './permission';
-import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface UserDoc extends Document {
     id: string;
@@ -27,7 +31,7 @@ const userSchema = new dynamoose.Schema(
 const User = dynamoose.model<UserDoc>(
     'ms-auth-users',
     userSchema,
-    localModelOptions,
+    modelOptions,
 );
 
 User.serializer.add(

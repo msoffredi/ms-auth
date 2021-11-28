@@ -4,11 +4,11 @@ import {
     DatabaseError,
     RequestValidationError,
     RouteHandler,
+    Serializers,
 } from '@jmsoffredi/ms-common';
 import { Module } from '../models/module';
 import { Operation } from '../models/operation';
 import { Permission, PermissionDoc } from '../models/permission';
-import { Serializers } from '../models/_common';
 
 export const postPermissionHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

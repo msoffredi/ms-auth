@@ -1,6 +1,10 @@
+import {
+    modelOptions,
+    Serializers,
+    SerializersOptions,
+} from '@jmsoffredi/ms-common';
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
-import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface RoleDoc extends Document {
     id: string;
@@ -28,7 +32,7 @@ const roleSchema = new dynamoose.Schema(
 const Role = dynamoose.model<RoleDoc>(
     'ms-auth-roles',
     roleSchema,
-    localModelOptions,
+    modelOptions,
 );
 
 Role.serializer.add(

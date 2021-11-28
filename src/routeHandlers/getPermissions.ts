@@ -1,6 +1,5 @@
 import { Permission, PermissionDoc } from '../models/permission';
-import { Serializers } from '../models/_common';
-import { RouteHandler } from '@jmsoffredi/ms-common';
+import { RouteHandler, Serializers } from '@jmsoffredi/ms-common';
 
 export const getPermissionsHandler: RouteHandler = async (): Promise<
     PermissionDoc[]
