@@ -4,7 +4,6 @@ import { Permission } from '../../src/models/permission';
 import { Role } from '../../src/models/role';
 import { User } from '../../src/models/user';
 import {
-    addUserWithPermissions,
     constructEventBridgeEvent,
     testContext,
     testUserEmail,
@@ -17,21 +16,24 @@ beforeEach(() => {
 });
 
 it('Deletes a user on user.deleted event-bus event with valid user in the DB', async () => {
-    await addUserWithPermissions();
-    const user = await User.get(testUserEmail);
+    const user = await User.create({
+        id: 'user123',
+        roles: [],
+    });
     expect(user).toBeDefined();
 
     const event = constructEventBridgeEvent(Types.UserDeleted, {
         type: Types.UserDeleted,
         data: {
-            userId: testUserEmail,
+            id: user.id,
+            email: testUserEmail,
         },
     });
 
     await handler(event, testContext, callback);
     expect(callback).toHaveBeenCalled();
 
-    const user2 = await User.get(testUserEmail);
+    const user2 = await User.get(user.id);
     expect(user2).toBeUndefined();
 });
 

@@ -1,6 +1,10 @@
+import {
+    modelOptions,
+    Serializers,
+    SerializersOptions,
+} from '@jmsoffredi/ms-common';
 import dynamoose from 'dynamoose';
 import { Document } from 'dynamoose/dist/Document';
-import { localModelOptions, Serializers, SerializersOptions } from './_common';
 
 interface OperationDoc extends Document {
     id: string;
@@ -23,7 +27,7 @@ const operationSchema = new dynamoose.Schema(
 const Operation = dynamoose.model<OperationDoc>(
     'ms-auth-operations',
     operationSchema,
-    localModelOptions,
+    modelOptions,
 );
 
 Operation.serializer.add(

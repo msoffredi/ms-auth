@@ -3,11 +3,11 @@ import {
     RequestValidationError,
     CustomAPIGatewayProxyEvent,
     RouteHandler,
+    Serializers,
 } from '@jmsoffredi/ms-common';
 import { Permission } from '../models/permission';
 import { Role } from '../models/role';
 import { User, UserDoc } from '../models/user';
-import { Serializers } from '../models/_common';
 
 export const getOneUserHandler: RouteHandler = async (
     event: CustomAPIGatewayProxyEvent,

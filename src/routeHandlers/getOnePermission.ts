@@ -1,7 +1,10 @@
 import { APIGatewayProxyEvent } from 'aws-lambda';
-import { DatabaseError, RequestValidationError } from '@jmsoffredi/ms-common';
+import {
+    DatabaseError,
+    RequestValidationError,
+    Serializers,
+} from '@jmsoffredi/ms-common';
 import { Permission, PermissionDoc } from '../models/permission';
-import { Serializers } from '../models/_common';
 
 export const getOnePermissionHandler = async (
     event: APIGatewayProxyEvent,

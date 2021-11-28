@@ -3,9 +3,9 @@ import {
     DatabaseError,
     RequestValidationError,
     RouteHandler,
+    Serializers,
 } from '@jmsoffredi/ms-common';
 import { Role, RoleDoc } from '../models/role';
-import { Serializers } from '../models/_common';
 
 export const getOneRoleHandler: RouteHandler = async (
     event: APIGatewayProxyEvent,

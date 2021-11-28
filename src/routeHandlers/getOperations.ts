@@ -1,6 +1,5 @@
 import { Operation, OperationDoc } from '../models/operation';
-import { Serializers } from '../models/_common';
-import { RouteHandler } from '@jmsoffredi/ms-common';
+import { RouteHandler, Serializers } from '@jmsoffredi/ms-common';
 
 export const getOperationsHandler: RouteHandler =
     async (): Promise<OperationDoc> => {

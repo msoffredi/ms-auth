@@ -8,7 +8,7 @@
     },
     "description": "RBAC authorization serverless microservice",
     "dependencies": {
-        "@jmsoffredi/ms-common": "^0.2.2",
+        "@jmsoffredi/ms-common": "^0.2.4",
         "aws-sdk": "^2.1036.0",
         "dynamoose": "^2.8.2",
         "jsonwebtoken": "^8.5.1",
